@@ -7,7 +7,7 @@ we create a matix of 2*length(x) X 2*length(x)
 eta is the viscosity of the fluid.
 a is the particle's radius.*/
 
-void MobRot(Cartesian_Point *PosC, double *D, double *C, double *P, double aa, int NParticles)
+void MobRot(Point *PosC, double *D, double *C, double *P, double aa, int NParticles)
 
 {
   int ii, jj, result,n,m,mm;

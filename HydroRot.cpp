@@ -1,20 +1,21 @@
 #include "declarations.h"
+#include "RandGen.h"
 
 /*****************************************************/
 
-void HydroRot(Cartesian_Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double Rad, double *P, int NParticles, double T, long &idum)
+void HydroRot(Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double *P, int NParticles, double T, long &idum)
 {
   int ii, jj;
   double S, Fs;
 
   MobRot(PosC,D,C,P,aa,NParticles);
 
-  VorForce(F,PosC,PosP,aa,K,Kt,Eps,Rad,NParticles);
+  // VorForce(F,PosC,PosP,aa,K,Kt,Eps,Rad,NParticles);
 
   //#pragma omp parallel
   //{
   //#pragma omp for
-    for(jj=0 ; jj < 2*NParticles ; jj++) R[jj] = Randn(idum);
+    for(jj=0 ; jj < 2*NParticles ; jj++) R[jj] = RandGen::Randn();
     // }
 
     //#pragma omp parallel

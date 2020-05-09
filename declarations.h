@@ -11,11 +11,12 @@
 //#include <malloc.h>
 #include <assert.h>
 #include "complex.h"
-#include <sys/time.h>
+#include <time.h>
 #include <omp.h>
 #include <string.h>
 #include <time.h>
 #include <omp.h>
+
 
 // ********************** constants  **********************
 
@@ -38,7 +39,7 @@ typedef struct
 {
   double x, y;
   
-} Cartesian_Point;
+} Point;
 
 
 typedef struct
@@ -46,17 +47,20 @@ typedef struct
   double Theta, R;
   
 } Polar_Point;
-
 // ********************** Functions  **********************
 
 void InitSim(int NParticles, double Rad, double Err, long &idum);
-void HydroRot(Cartesian_Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double Rad, double *P, int NParticles,double T, long &idum);
-void MobRot(Cartesian_Point *PosC, double *D, double *C, double *P, double aa, int NParticles);
-void VorForce(double *F, Cartesian_Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles);
+void HydroRot(Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double *P, int NParticles,double T, long &idum);
+void MobRot(Point *PosC, double *D, double *C, double *P, double aa, int NParticles);
+void VorForce(double *F, Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles);
 int cholesky(int NParticles, double *D, double *C, double *P);
 int Index(int ii,int jj, int NParticles);
-void Randomize();
+void Randomize(long* idum);
 double Randn(long &idum);
 double ran_nrc(long *idum);
-
+void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions);
+void InfoChamber(int N, double Dt, double SampleRate,
+                 double R,double T, double Eta,
+                 double Lx, double Ly,double WallShrink,
+                 int NumOfParticles, char* SaveFoldername, bool DisplayLive);
 #endif

@@ -1,4 +1,6 @@
 #include "declarations.h"
+#include "RandGen.h"
+#include <random>
 
 #define IM1 2147483563
 #define IM2 2147483399
@@ -17,7 +19,18 @@
 
 /****************************************************************************/
 
-double ran_nrc(long *idum)
+// Members
+long RandGen::idum;
+
+// Functions
+
+void RandGen::Init(long* idum)
+{
+  RandGen::ran_nrc(idum);
+  RandGen::idum = *idum;
+}
+
+float RandGen::ran_nrc(long *idum)
 {
   int    j;
   long   k;
@@ -59,28 +72,38 @@ double ran_nrc(long *idum)
 
 /****************************************************************************/
 
-void Randomize()
+void RandGen::Randomize()
 {
+  long* idum = &(RandGen::idum);
   double tt = (double)time(0);
   long   rn = (long)tt % 1000;
   int    i;
 
-  for (i = 0; i < rn; i++) random();
+  for (i = 0; i < rn; i++) ran_nrc(idum);
   return;
 }
 
 /****************************************************************************/
 
-double Randn(long &idum)
+double RandGen::Randn()
 {
+  long* idum = &(RandGen::idum);
   double x, y, s=1.0;
 
   while(s >= 1){
     // srand((unsigned)time(NULL));
-    x = 2.0*(rand()%2 - 0.5)*(ran_nrc(&idum));
-    y = 2.0*(rand()%2 - 0.5)*(ran_nrc(&idum));
+    x = 2.0*(rand()%2 - 0.5)*(ran_nrc(idum));
+    y = 2.0*(rand()%2 - 0.5)*(ran_nrc(idum));
     s = ((x*x) + (y*y));
   }
 
   return(x*sqrt(-2.0*log(s)/s));
+}
+
+double RandGen::Randu(double LBound, double UBound)
+{
+  double Len = abs(UBound - LBound);
+  float x = ran_nrc(&(RandGen::idum));
+  double res = LBound + (Len*ran_nrc(&(RandGen::idum)));
+  return res;
 }

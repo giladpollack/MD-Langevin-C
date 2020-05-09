@@ -2,7 +2,7 @@
 
 // This function calculates the force acting on a particle in a vortex
 
-void TrapForce(double *F, Cartesian_Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles)
+void TrapForce(double *F, Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles)
 {
   int ii,jj;
   double dx, dy,r2,rmax2;
