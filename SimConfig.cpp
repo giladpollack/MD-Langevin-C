@@ -32,10 +32,7 @@ char* SimConfig::ToString(char* CfgString)
     strcat(CfgString, this->SaveFoldername);
     strcat(CfgString, "\n");
     strcat(CfgString, "Positions:\n");
-    for (int i = 0; i < this->NumOfParticles; i++)
-    {
-        char CurrPos[50];
-        sprintf(CurrPos, "%e,%e\n", this->InitPositions[i].x, this->InitPositions[i].y);
-        strcat(CfgString, CurrPos);
-    }
+    char PositionsString[500];
+    GetPositionsString(this->InitPositions,this->NumOfParticles,PositionsString);
+    strcat(CfgString, PositionsString);
 }

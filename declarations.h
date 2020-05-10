@@ -60,6 +60,7 @@ void Randomize(long* idum);
 void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions);
 void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles);
 bool doesDirExist(char* Path);
+void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString);
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,

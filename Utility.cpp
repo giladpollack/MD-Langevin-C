@@ -68,6 +68,23 @@ void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles)
 }
 
 /**
+ * Creates a string of the particle positions. OutString MUST BE ALLOCATED BEFORE CALLING THE FUNCTION!
+ *
+ * @Positions The positions of the particles
+ * @NumOfParticles The number of particles to get positions for
+ * @Outstring The output parameter returning the string of positions
+ */
+void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString)
+{
+    for (int i = 0; i < NumOfParticles; i++)
+    {
+        char CurrPos[50];
+        sprintf(CurrPos, "%e,%e\n", Positions[i].x, Positions[i].y);
+        strcat(OutString, CurrPos);
+    }
+}
+
+/**
  * Checks if two circles overlap
  *
  * @x1 The x coordinate of the center of the first circle
