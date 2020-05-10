@@ -61,6 +61,8 @@ void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* Wall
 void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles);
 bool doesDirExist(char* Path);
 void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString);
+void GetSingleAxisSavedSteps(Point* ParticlePositions, int NumOfParticles, char axis, char* OutString);
+void SetToZero(double* Array, int ArrayLen);
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,

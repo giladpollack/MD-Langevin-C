@@ -3,6 +3,7 @@
 #include "ForceFunctions.h"
 #include <iostream>
 #include <direct.h>
+#include "RandGen.h"
 
 const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";
@@ -25,7 +26,7 @@ void MDSim::FeedbackFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData
 
 void MDSim::PrintFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
 {
-    std::cout << Cfg.SaveFoldername << (CurrStepData.StepNum / Cfg.N) * 100 << "%" << std::endl;
+    std::cout << Cfg.SaveFoldername << " - " << ((CurrStepData.StepNum * 100) / Cfg.N) << "%" << std::endl;
     if (Cfg.DisplayLive)
     {
         char PositionsString[500];
@@ -37,6 +38,11 @@ void MDSim::PrintFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData Ad
 
 void MDSim::ForcesFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
 {
+    // Initializing the forces at 0
+    SetToZero(CurrStepData.Fx, Cfg.NumOfParticles);
+    SetToZero(CurrStepData.Fy, Cfg.NumOfParticles);
+
+    // Computing particle repulsion forces if necessary
     if (Cfg.UseParticleRepulsion)
     {
         GetWCAParticleForces(CurrStepData.ParticlePositions,
@@ -45,6 +51,24 @@ void MDSim::ForcesFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData A
                              CurrStepData.Fx,
                              CurrStepData.Fy);
     }
+
+    // Computing the wall repulsion forces if necessary
+    if (Cfg.UseWalls)
+    {
+        if (strcmp(Cfg.WallRepulsionType, "WCA") == 0)
+        {
+            GetWCAWallForces(   CurrStepData.ParticlePositions,
+                                Cfg.NumOfParticles,
+                                Cfg.R,
+                                Cfg.WCAEpsilon,
+                                CurrStepData.WallPositionsX,
+                                CurrStepData.WallPositionsY,
+                                CurrStepData.Fx,
+                                CurrStepData.Fy);
+        }
+        
+    }
+    
 }
 
 void MDSim::RunSim()
@@ -69,7 +93,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     double* Ay = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
 
     // Allocating the memory buffer of particle positions to use between saves
-    int NumOfSavedSteps = Cfg.SavePeriod / SamplePeriod;
+    int NumOfSavedSteps = Cfg.SavePeriod / SamplePeriod + 2;
     Point** ParticlePositions = (Point**) malloc(NumOfSavedSteps*sizeof(Point*));
     for (int i = 0; i < NumOfSavedSteps; i++)
     {
@@ -111,13 +135,29 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     FILE* CfgFilestream = fopen(CfgFile,"w");
     fprintf(CfgFilestream, CfgString);
     fclose(CfgFilestream);
-    
+
+        // Checking whether to use hydrodynamic interactions
+    if (!Cfg.UseHydro)
+    {
+        // Setting the diffusion vectors to standard diffusion without hydrodynamic corrections
+        for (int i = 0; i < Cfg.NumOfParticles; i++)
+        {
+            Dx[i] = D;
+            Dy[i] = D;
+            Ax[i] = sqrt(2*D);
+            Ay[i] = sqrt(2*D);
+        }
+    }
+
+
 
     // Setting up the run variables
     SimStepData CurrStepData;
     CurrStepData.ParticlePositions = (Point*) malloc (Cfg.NumOfParticles*sizeof(Point));
     CopyPositions(CurrStepData.ParticlePositions, Cfg.InitPositions, Cfg.NumOfParticles);
     CopyPositions(ParticlePositions[0], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
+    CurrStepData.Fx = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
+    CurrStepData.Fy = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
 
     // Checking whether to initialize wall-related variables
     if (Cfg.UseWalls)
@@ -136,16 +176,75 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     // Printing the initial placements
     PrintFunc(Cfg,CurrStepData, AddedData);
 
-    // Checking whether to use hydrodynamic interactions
-    if (!Cfg.UseHydro)
+    // Running the simulation
+    int SampleInd = 1;
+    for (int i = 1; i < Cfg.N; i++)
     {
-        // Setting the diffusion vectors to standard diffusion without hydrodynamic corrections
-        for (int i = 0; i < Cfg.NumOfParticles; i++)
+        CurrStepData.StepNum = i;
+
+        // Checking whether to sample and print
+        if (i % SamplePeriod == 0)
         {
-            Dx[i] = D;
-            Dy[i] = D;
-            Ax[i] = sqrt(2*D);
-            Ay[i] = sqrt(2*D);
+            CopyPositions(ParticlePositions[SampleInd], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
+            SampleInd++;
+        }
+
+        // Checking whether to save to file
+        if ((i % Cfg.SavePeriod == 0) || (i == Cfg.N))
+        {
+            PrintFunc(Cfg, CurrStepData, AddedData);
+            char StepString[500];
+
+            // Saving the X positions
+            FILE* XFilestream = fopen(PosFileX,"a");
+            for (int SavedStepInd = 0; SavedStepInd < SampleInd - 1; SavedStepInd++)
+            {
+                GetSingleAxisSavedSteps(ParticlePositions[SavedStepInd], Cfg.NumOfParticles, 'x', StepString);
+                fprintf(XFilestream, StepString); 
+            }
+
+            fclose(XFilestream);
+
+            // Saving the Y Positions
+            FILE* YFilestream = fopen(PosFileY,"a");
+            for (int SavedStepInd = 0; SavedStepInd < SampleInd - 1; SavedStepInd++)
+            {
+                GetSingleAxisSavedSteps(ParticlePositions[SavedStepInd], Cfg.NumOfParticles, 'y', StepString);
+                fprintf(YFilestream, StepString); 
+            }
+            
+            fclose(YFilestream);
+
+            SampleInd = 0;
+
+            // Saving the additional tracked data
+            // TODO: write this
+        }
+
+        // Forces Computation
+        ForcesFunc(Cfg, CurrStepData, AddedData);
+
+        // Hydrodynamic interactions computation
+        if (Cfg.UseHydro)
+        {
+            throw; // TODO: Write this
+        }
+        
+        // Running the step
+        for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
+        {
+            double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn();
+            double Second = (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
+            CurrStepData.ParticlePositions[CurrParticle].x += Ax[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn() +
+                                                              (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
+            CurrStepData.ParticlePositions[CurrParticle].y += Ay[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn() +
+                                                              (Dy[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fy[CurrParticle]*Cfg.Dt;
+        }
+        
+        // Checking whether to perform feedback
+        if (CheckFeedbackFunc(Cfg,CurrStepData,AddedData))
+        {
+            FeedbackFunc(Cfg,CurrStepData,AddedData);
         }
     }
 
@@ -163,4 +262,6 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     free(Dy);
     free(Ax);
     free(Ay);
+    free(CurrStepData.Fx);
+    free(CurrStepData.Fy);
 }

@@ -16,12 +16,16 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.NumOfParticles = NumOfParticles;
   Cfg.Eta = Eta;
   Cfg.R = R;
+  Cfg.T = T;
   Cfg.SaveFoldername = SaveFoldername;
   Cfg.SavePeriod = Cfg.N / 10;
-  Cfg.UseWalls = false;
+  Cfg.UseWalls = true;
+  char WallRepulsionType[20] = "WCA";
+  Cfg.WallRepulsionType = WallRepulsionType;
   Cfg.UseHydro = false;
-  Cfg.UseParticleRepulsion = false;
+  Cfg.UseParticleRepulsion = true;
   Cfg.UseTraps = false;
+  Cfg.WCAEpsilon = 0.2*kB*Cfg.T;
   
   WallPositionsX[0] = -Lx / 2;
   WallPositionsX[1] = Lx /2 - WallShrink;

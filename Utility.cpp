@@ -85,6 +85,43 @@ void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString)
 }
 
 /**
+ * Creates a string of a single coordinate (x or y) of the particle position.
+ * OutString MUST BE ALLOCATED BEFORE CALLING THE FUNCTION!
+ *
+ * @ParticlePositions The positions of the particles
+ * @NumOfParticles The number of particles to get positions for
+ * @axis Which axis to get
+ * @MultFactor A factor to allow the user to save in desired units (micrometers for instance)
+ * @Outstring The output parameter returning the string of positions
+ */
+void GetSingleAxisSavedSteps(Point* ParticlePositions, int NumOfParticles, char axis, char* OutString)
+{
+    OutString[0] = '\0';
+
+    for (int i = 0; i < NumOfParticles; i++)
+    {
+        char TempString[20];
+        if (axis == 'x')
+        {
+            sprintf(TempString, "%e,",ParticlePositions[i].x);
+        }
+        else if (axis == 'y')
+        {
+            sprintf(TempString, "%e,",ParticlePositions[i].y);
+        }
+        else
+        {
+            throw;
+        }
+        
+        strcat(OutString,TempString);
+    }
+
+    OutString[strlen(OutString) - 1] = '\n';
+    
+}
+
+/**
  * Checks if two circles overlap
  *
  * @x1 The x coordinate of the center of the first circle
@@ -123,4 +160,18 @@ bool doesDirExist(char* Path)
         res = true;
     
     return res;
+}
+
+/**
+ * Sets the values of an array to be 0
+ *
+ * @Array The array to set
+ * @ArrayLen The number of cells in the array
+ */
+void SetToZero(double* Array, int ArrayLen)
+{
+    for (int i = 0; i < ArrayLen; i++)
+    {
+        Array[i] = 0;
+    }
 }

@@ -30,6 +30,13 @@ void RandGen::Init(long* idum)
   RandGen::idum = *idum;
 }
 
+/**
+ * Returns a uniformly distributed random number between 0 and 1
+ * Based on Numerical Recipes' ran2() algorithm page 282
+ *
+ * @idum The seed of the random generator
+ * @return The random number
+ */
 float RandGen::ran_nrc(long *idum)
 {
   int    j;
@@ -40,6 +47,7 @@ float RandGen::ran_nrc(long *idum)
   double temp;
 
   if (*idum <= 0){  /* Initialize */
+    *idum += time(0); // Randomizing the seed a bit more
     if (-(*idum) < 1) *idum = 1;    /* Be sure to prevent idum = 0 */
     else *idum = -(*idum);
     idum2 = (*idum);
@@ -72,6 +80,9 @@ float RandGen::ran_nrc(long *idum)
 
 /****************************************************************************/
 
+/**
+ * Moves the random seed some steps ahead according to the current time
+ */
 void RandGen::Randomize()
 {
   long* idum = &(RandGen::idum);
@@ -84,7 +95,12 @@ void RandGen::Randomize()
 }
 
 /****************************************************************************/
-
+/**
+ * Returns a normally distributed random number with mean 0 and sigma 1
+ * Based on numerical recipes page 289
+ *
+ * @return The normal random number
+ */
 double RandGen::Randn()
 {
   long* idum = &(RandGen::idum);
@@ -92,12 +108,13 @@ double RandGen::Randn()
 
   while(s >= 1){
     // srand((unsigned)time(NULL));
-    x = 2.0*(rand()%2 - 0.5)*(ran_nrc(idum));
-    y = 2.0*(rand()%2 - 0.5)*(ran_nrc(idum));
+    x = 2.0*(ran_nrc(idum)) - 1;
+    y = 2.0*(ran_nrc(idum)) - 1;
     s = ((x*x) + (y*y));
   }
+  double fac = sqrt(-2.0*log(s)/s);
 
-  return(x*sqrt(-2.0*log(s)/s));
+  return(x*fac);
 }
 
 double RandGen::Randu(double LBound, double UBound)

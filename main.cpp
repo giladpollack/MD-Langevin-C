@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
   long initVal = (long)-329475;
   RandGen::Init(&initVal);
   
+  
   int NParticles, MaxIter;
   double Dist, aa, dt, K, Kt, Err, Eps, T;
   int numArgs = argc;
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
   // Basic definitions
   char SaveFoldername[20] = "Check";
   InfoChamber(1e6, 1e-4, 20, 1e-6, 300, 0.001, 11e-6, 11e-6, 0, 7, SaveFoldername, false);
-
+  throw;
 
 
   NParticles = atoi(argv[1]); // Number of particles
