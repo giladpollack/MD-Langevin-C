@@ -1,5 +1,6 @@
 #include "declarations.h"
 #include "SimConfig.h"
+#include "MDSim.h"
 
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
@@ -8,23 +9,34 @@ void InfoChamber(int N, double Dt, double SampleRate,
 {
   double WallPositionsX[2];
   double WallPositionsY[2];
-  SimConfig cfg;
-  cfg.N = N;
-  cfg.Dt = Dt;
-  cfg.SampleRate = SampleRate;
-  cfg.NumOfParticles = NumOfParticles;
-  cfg.Eta = Eta;
+  SimConfig Cfg;
+  Cfg.N = N;
+  Cfg.Dt = Dt;
+  Cfg.SampleRate = SampleRate;
+  Cfg.NumOfParticles = NumOfParticles;
+  Cfg.Eta = Eta;
+  Cfg.R = R;
+  Cfg.SaveFoldername = SaveFoldername;
+  Cfg.SavePeriod = Cfg.N / 10;
+  Cfg.UseWalls = false;
+  Cfg.UseHydro = false;
+  Cfg.UseParticleRepulsion = false;
+  Cfg.UseTraps = false;
   
-//   WallPositionsX[0] = -Lx / 2;
-//   WallPositionsX[1] = Lx /2 - WallShrink;
-//   WallPositionsY[0] = -Ly / 2;
-//   WallPositionsY[1] = Ly / 2;
-//   cfg.WallPositionsX = WallPositionsX;
-//   cfg.WallPositionsY = WallPositionsY;
-//   Point* InitPositions = (Point*) malloc (cfg.NumOfParticles*sizeof(Point));
-//   if(InitPositions==NULL) exit(10);
-//   RandomizePositions(cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions);
-//   cfg.InitPositions = InitPositions;
+  WallPositionsX[0] = -Lx / 2;
+  WallPositionsX[1] = Lx /2 - WallShrink;
+  WallPositionsY[0] = -Ly / 2;
+  WallPositionsY[1] = Ly / 2;
+  Cfg.WallPositionsX = WallPositionsX;
+  Cfg.WallPositionsY = WallPositionsY;
+  Point* InitPositions = (Point*) malloc (Cfg.NumOfParticles*sizeof(Point));
+  if(InitPositions==NULL) exit(10);
+  RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions);
+  Cfg.InitPositions = InitPositions;
 
-//   free(InitPositions);
+  // Initializing the simulation with the configuration
+  MDSim currSim(Cfg);
+  currSim.RunSim();
+
+  free(InitPositions);
 }

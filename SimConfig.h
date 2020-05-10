@@ -1,3 +1,5 @@
+#ifndef SimConfig_h
+#define SimConfig_h
 #include "declarations.h"
 
 
@@ -8,14 +10,14 @@ class SimConfig
 
     // Data members:
     // Basic settings
+    int N;
     int NumOfParticles;
-    double* R;
-    Point* InitPositions;
+    double R;
     double Eta;
     double T;
-    double N;
     double Dt;
     double SampleRate;
+    Point* InitPositions;
 
     // Display Settings
     bool DisplayLive;
@@ -44,7 +46,40 @@ class SimConfig
     double TrapsA;
     double TrapsS;
 
+    // Methods
+    char* ToString(char* CfgStirng);
+
     // // Default Constructor
+    SimConfig()
+    {
+        this->NumOfParticles = 0;
+        this->R = 0;
+        this->InitPositions = nullptr;
+        this->Eta = 0;
+        this->T = 0;
+        this->N = 0;
+        this->Dt = 0;
+        this->SampleRate = 0;
+        this->SaveFoldername = nullptr;
+        this->DisplayLive = false;
+        this->Xlimits = nullptr;
+        this->Ylimits = nullptr;
+        this->SavePeriod = 0;
+        this->UseHydro = false;
+        this->UseWalls = false;
+        this->UseTraps = false;
+        this->WallRepulsionType = nullptr;
+        this->WallGaussianA = 0;
+        this->WallGaussianS = 0;
+        this->WallHarmonicK = 0;
+        this->WallPositionsX = nullptr;
+        this->WallPositionsY = nullptr;
+        this->UseParticleRepulsion = false;
+        this->WCAEpsilon = 0;
+        this->InitTrapPositions = nullptr;
+        this->TrapsA = 0;
+        this->TrapsS = 0;
+    }
     // SimConfig() = delete;
     // SimConfig(int NumOfParticles, double** R, double** InitPositions, double Eta,
     //           double T, double N, double Dt, double sampleRate, double SavePeriod, char** SaveFoldername)
@@ -78,3 +113,4 @@ class SimConfig
     //     this->TrapsS = 0;
     // }
 };
+#endif

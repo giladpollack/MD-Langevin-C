@@ -1,7 +1,7 @@
 #include "declarations.h"
 #include "RandGen.h"
 #include <iostream>
-#include <random>
+
 
 /*this function is simulating hydrodynamic interaction using the rotne
 prager tensor and not the simple mobility function [X,Y]=full_hydro(x,
@@ -19,13 +19,9 @@ int main(int argc, char *argv[])
   int NParticles, MaxIter;
   double Dist, aa, dt, K, Kt, Err, Eps, T;
   int numArgs = argc;
-  Point* bla = (Point*) malloc (1*sizeof(Point));;
-  bla->x = 1;
-  bla->y = 2;
 
   // Basic definitions
-  char SaveFoldername [20];
-  strcpy(SaveFoldername, "Check");
+  char SaveFoldername[20] = "Check";
   InfoChamber(1e6, 1e-4, 20, 1e-6, 300, 0.001, 11e-6, 11e-6, 0, 7, SaveFoldername, false);
 
 

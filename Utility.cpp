@@ -1,5 +1,7 @@
 #include "declarations.h"
 #include "RandGen.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
 // Declarations
 bool checkCollision(double x1, double y1, double r1,  
@@ -49,6 +51,23 @@ void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* Wall
 }
 
 /**
+ * Copies values of points from the source array to the target array.
+ * The target array MUST BE ALLOCATED BEFORE CALLING THIS FUNCTiON!
+ *
+ * @TargetArray The array of points into which values will be copied. MUST BE ALLOCATED!
+ * @SourceArray The array from which the values are taken.
+ * @NumOfParticles The number of particles to copy from the source to the target
+ */
+void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles)
+{
+    for (int i = 0; i < NumOfParticles; i++)
+    {
+        TargetArray[i].x = SourceArray[i].x;
+        TargetArray[i].y = SourceArray[i].y;
+    }
+}
+
+/**
  * Checks if two circles overlap
  *
  * @x1 The x coordinate of the center of the first circle
@@ -69,4 +88,22 @@ bool checkCollision(double x1, double y1, double r1,
         return true; 
     else
         return false; 
-} 
+}
+
+/**
+ * Checks if a directory exists
+ *
+ * @Path The path to the directory
+ * @return true if the directory exists and is a directory, false otherwise
+ */
+bool doesDirExist(char* Path)
+{
+    struct stat info;
+    bool res = false;
+    if( stat( Path, &info ) != 0 )
+        printf( "cannot access %s\n", Path );
+    else if( info.st_mode & S_IFDIR )  // S_ISDIR() doesn't exist on my windows 
+        res = true;
+    
+    return res;
+}

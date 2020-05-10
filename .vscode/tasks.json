@@ -8,7 +8,7 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "-g", "*.cpp", "-o", "MDSim.exe"
+                "-g", "*.cpp", "-o", "MD-Langevin.exe"
             ],
             "group": {
                 "kind":"build",
