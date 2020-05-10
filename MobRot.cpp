@@ -50,7 +50,7 @@ void MobRot(Point *PosC, double *D, double *C, double *P, double aa, int NPartic
 	}
       }
     }
-   result = cholesky(NParticles, D, C, P); 
+   result = 0; //cholesky(NParticles, D, C); 
     /*  for (mm=0 ;mm<4 ;mm++){
     printf("%f %f %f %f\n", D[Index(mm,0,2)],D[Index(mm,1,2)],D[Index(mm,2,2)],D[Index(mm,3,2)]);
   }

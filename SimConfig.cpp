@@ -2,7 +2,7 @@
 #include "declarations.h"
 #include <iostream>
 
-char* SimConfig::ToString(char* CfgString)
+void SimConfig::ToString(char* CfgString)
 {
     CfgString[0] = '\0';
     sprintf(CfgString, 

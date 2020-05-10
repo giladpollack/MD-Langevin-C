@@ -47,7 +47,7 @@ class SimConfig
     double TrapsS;
 
     // Methods
-    char* ToString(char* CfgStirng);
+    void ToString(char* CfgStirng);
 
     // // Default Constructor
     SimConfig()

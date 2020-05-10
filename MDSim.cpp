@@ -227,7 +227,14 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         // Hydrodynamic interactions computation
         if (Cfg.UseHydro)
         {
-            throw; // TODO: Write this
+            RotnePrager(    CurrStepData.ParticlePositions,
+                            Cfg.NumOfParticles,
+                            Cfg.R,
+                            D,
+                            Dx,
+                            Dy,
+                            Ax,
+                            Ay);
         }
         
         // Running the step

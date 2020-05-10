@@ -54,7 +54,7 @@ void InitSim(int NParticles, double Rad, double Err, long &idum);
 void HydroRot(Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double *P, int NParticles,double T, long &idum);
 void MobRot(Point *PosC, double *D, double *C, double *P, double aa, int NParticles);
 void VorForce(double *F, Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles);
-int cholesky(int NParticles, double *D, double *C, double *P);
+int cholesky(int NParticles, double** D, double** C);
 int Index(int ii,int jj, int NParticles);
 void Randomize(long* idum);
 void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions);
@@ -67,4 +67,12 @@ void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
                  int NumOfParticles, char* SaveFoldername, bool DisplayLive);
+void RotnePrager(   Point* ParticlePositions,
+                    int NumOfParticles,
+                    double R,
+                    double D,
+                    double* Dx,
+                    double* Dy,
+                    double* Ax,
+                    double* Ay);                 
 #endif

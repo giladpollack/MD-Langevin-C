@@ -22,7 +22,7 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.UseWalls = true;
   char WallRepulsionType[20] = "WCA";
   Cfg.WallRepulsionType = WallRepulsionType;
-  Cfg.UseHydro = false;
+  Cfg.UseHydro = true;
   Cfg.UseParticleRepulsion = true;
   Cfg.UseTraps = false;
   Cfg.WCAEpsilon = 0.2*kB*Cfg.T;

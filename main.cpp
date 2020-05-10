@@ -1,7 +1,10 @@
 #include "declarations.h"
 #include "RandGen.h"
 #include <iostream>
-
+// #include <execution>
+// #include <vector>
+// #include <mutex>
+// #include <algorithm>
 
 /*this function is simulating hydrodynamic interaction using the rotne
 prager tensor and not the simple mobility function [X,Y]=full_hydro(x,
@@ -16,7 +19,14 @@ int main(int argc, char *argv[])
   long initVal = (long)-329475;
   RandGen::Init(&initVal);
   
-  
+  // int x = 0;
+  // int a[] = {0,1};
+  // std::vector<int> v;
+  // std::mutex m;
+  // std::for_each(std::execution::par, std::begin(a),std::end(a),[&](int i) {
+  //   std::lock_guard<std::mutex> guard(m);
+  //   ++x;
+  // });
   int NParticles, MaxIter;
   double Dist, aa, dt, K, Kt, Err, Eps, T;
   int numArgs = argc;

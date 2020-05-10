@@ -11,7 +11,7 @@
         output   C  lower deomposed matrix
 ----------------------------------------------- */
 
-int cholesky(int NParticles, double *D, double *C, double *P){
+int cholesky(int NParticles, double** D, double** C){
   
   int ii, jj, kk;
   double s;
@@ -20,7 +20,7 @@ int cholesky(int NParticles, double *D, double *C, double *P){
    
         for (ii = 0; ii < 2*NParticles; ii++) {
 	    for (jj = 0; jj < 2*NParticles; jj++){ 
-	      C[Index(ii,jj,NParticles)] = D[Index(ii,jj,NParticles)];
+	      C[ii][jj] = D[ii][jj];
 	      	    }
 	  }
 
@@ -29,17 +29,18 @@ int cholesky(int NParticles, double *D, double *C, double *P){
 	  for (jj = 0; jj<ii+1; jj++){
 	    s=0;
 	    for (kk = 0; kk<jj; kk++){
-	      s+=C[Index(ii,kk,NParticles)]*C[Index(jj,kk,NParticles)];
+	      s+=C[ii][kk]*C[jj][kk];
 	    }
 	    if (ii==jj){
-	      if (C[Index(ii,ii,NParticles)]-s<=0){
+	      if (C[ii][ii]-s<=0){
 		printf("matrix is not positive definite\n");
+		throw;
 		return 0;
 	      }
-	      C[Index(ii,jj,NParticles)]=sqrt(C[Index(ii,ii,NParticles)]-s);
+	      C[ii][jj]=sqrt(C[ii][ii]-s);
 	    }
 	    else {
-	      C[Index(ii,jj,NParticles)]=(1.0/C[Index(jj,jj,NParticles)])*(C[Index(ii,jj,NParticles)]-s);
+	      C[ii][jj]=(1.0/C[jj][jj])*(C[ii][jj]-s);
 	    }
 	  }
 	}
@@ -47,7 +48,7 @@ int cholesky(int NParticles, double *D, double *C, double *P){
 	//make lower triangle	
 	for (ii = 0; ii < 2*NParticles; ii++) {
             for (jj = ii + 1; jj < 2*NParticles; jj++) {
-	      C[Index(ii,jj,NParticles)]  = 0;
+	      C[ii][jj]  = 0;
 	     }
 	 }
 

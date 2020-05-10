@@ -49,6 +49,19 @@
         "xstddef": "cpp",
         "xstring": "cpp",
         "xtr1common": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "execution": "cpp",
+        "atomic": "cpp",
+        "deque": "cpp",
+        "functional": "cpp",
+        "mutex": "cpp",
+        "numeric": "cpp",
+        "queue": "cpp",
+        "xthread": "cpp",
+        "thread": "cpp",
+        "tuple": "cpp",
+        "unordered_map": "cpp",
+        "xfunctional": "cpp",
+        "xhash": "cpp"
     }
 }
