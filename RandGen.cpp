@@ -47,7 +47,6 @@ float RandGen::ran_nrc(long *idum)
   double temp;
 
   if (*idum <= 0){  /* Initialize */
-    *idum += time(0); // Randomizing the seed a bit more
     if (-(*idum) < 1) *idum = 1;    /* Be sure to prevent idum = 0 */
     else *idum = -(*idum);
     idum2 = (*idum);

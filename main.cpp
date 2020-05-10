@@ -17,7 +17,10 @@ int main(int argc, char *argv[])
 {
   // TODO: Fix to make the random better (use current time as seed)!
   long initVal = (long)-329475;
+  initVal -= time(0); // Randomizing the seed using the current time
+
   RandGen::Init(&initVal);
+  RandGen::Randomize();
   
   // int x = 0;
   // int a[] = {0,1};

@@ -37,6 +37,7 @@ void PrintMat(double** Mat, int MatSize, double DivSize)
  * @NumOfParticles The number of particles in the simulation
  * @R The radius of the particles (denoted as "a" in the article)
  * @D The diffusion coefficient of particles in the system without hydrodynamic interactions
+ * @DMat, AMat The matrices to use, allocated once to save on memory allocations TODO: Move to a static class member
  * @Dx, Dy Output parameters for the corrected diffusion coefficients for the particles
  * @Ax, Ay Output parameters fot the square root of the corrected diffusion coefficients (using Cholesky decomposition)
  */
@@ -44,6 +45,8 @@ void RotnePrager(   Point* ParticlePositions,
                     int NumOfParticles,
                     double R,
                     double D,
+                    double** DMat,
+                    double** AMat,
                     double* Dx,
                     double* Dy,
                     double* Ax,
@@ -56,10 +59,10 @@ void RotnePrager(   Point* ParticlePositions,
     double C2 = 0.5*pow(R,3);
 
     // Allocating the D matrix and setting it to be a unit matrix (multiplied by D)
-    double** DMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
+    // double** DMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
     for (int CurrRow = 0; CurrRow < d*NumOfParticles; CurrRow++)
     {
-        DMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
+        // DMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
         for (int CurrCol = 0; CurrCol < d*NumOfParticles; CurrCol++)
         {
             DMat[CurrRow][CurrCol] = 0;
@@ -69,10 +72,10 @@ void RotnePrager(   Point* ParticlePositions,
     }
 
     // Allocating and initializing the A Matrix
-    double** AMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
+    // double** AMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
     for (int CurrRow = 0; CurrRow < d*NumOfParticles; CurrRow++)
     {
-        AMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
+        // AMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
         for (int CurrCol = 0; CurrCol < d*NumOfParticles; CurrCol++)
         {
             AMat[CurrRow][CurrCol] = 0;
@@ -152,11 +155,11 @@ void RotnePrager(   Point* ParticlePositions,
     }
     
     // Freeing the allocated memory
-    for (int i = 0; i < d*NumOfParticles; i++)
-    {
-        free(DMat[i]);
-        free(AMat[i]);
-    }
-    free(AMat);
-    free(DMat);
+    // for (int i = 0; i < d*NumOfParticles; i++)
+    // {
+    //     free(DMat[i]);
+    //     free(AMat[i]);
+    // }
+    // free(AMat);
+    // free(DMat);
 }

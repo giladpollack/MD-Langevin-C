@@ -4,6 +4,7 @@
 #include <iostream>
 #include <direct.h>
 #include "RandGen.h"
+#include "Matrix.h"
 
 const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";
@@ -99,6 +100,10 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     {
         ParticlePositions[i] = (Point*) malloc(Cfg.NumOfParticles*sizeof(Point));
     }
+
+    // Allocating matrices to compute the hydrodynamic interactions if needed
+    Matrix DMat(Cfg.NumOfParticles*2, false);
+    Matrix AMat(Cfg.NumOfParticles*2, false);
     
     // Creating the path strings for the save files
     strcpy(PosFileX, Cfg.SaveFoldername);
@@ -231,6 +236,8 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
                             Cfg.NumOfParticles,
                             Cfg.R,
                             D,
+                            DMat.Mat,
+                            AMat.Mat,
                             Dx,
                             Dy,
                             Ax,
@@ -258,6 +265,8 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
 
     
     // Freeing the allocated variables
+    DMat.~Matrix();
+    AMat.~Matrix();
     for (int i = 0; i < NumOfSavedSteps; i++)
     {
         free(ParticlePositions[i]);
