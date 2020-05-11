@@ -1,6 +1,6 @@
 #ifndef MDSim_h
 #define MDSim_h
-#include "declarations.h"
+#include "../declarations.h"
 #include "SimConfig.h"
 #include "SimStepData.h"
 #include "AdditionalData.h"

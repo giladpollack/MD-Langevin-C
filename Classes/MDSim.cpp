@@ -1,10 +1,11 @@
-#include "declarations.h"
-#include "MDSim.h"
-#include "ForceFunctions.h"
 #include <iostream>
 #include <direct.h>
 #include "RandGen.h"
 #include "Matrix.h"
+#include "../declarations.h"
+#include "MDSim.h"
+#include "../ForceFunctions.h"
+#include "../Utility.h"
 
 const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";

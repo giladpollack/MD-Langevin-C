@@ -8,7 +8,7 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "-g", "-fopenmp", "*.cpp", "-o", "MD-Langevin.exe"
+                "-g", "-fopenmp", "*.cpp", "*/*.cpp", "-o", "MD-Langevin.exe"
             ],
             "group": {
                 "kind":"build",

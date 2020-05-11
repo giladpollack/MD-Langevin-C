@@ -3,20 +3,10 @@
 
 // ********************** Libraries **********************
 
-//#include <iostream.h>
-//#include <iomanip.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-//#include <malloc.h>
 #include <assert.h>
-#include "complex.h"
-#include <time.h>
-#include <omp.h>
+#include <complex.h>
 #include <string.h>
-#include <time.h>
-#include <omp.h>
-#include "RandGen.h"
+#include "Classes/RandGen.h"
 
 
 // ********************** constants  **********************
@@ -51,19 +41,6 @@ typedef struct
 } Polar_Point;
 // ********************** Functions  **********************
 
-void InitSim(int NParticles, double Rad, double Err, long &idum);
-void HydroRot(Point *PosC, Polar_Point *PosP, double *D, double *C, double *R, double *F, double aa, double dt, double K, double Kt, double Eps, double *P, int NParticles,double T, long &idum);
-void MobRot(Point *PosC, double *D, double *C, double *P, double aa, int NParticles);
-void VorForce(double *F, Point *PosC, Polar_Point *PosP, double aa, double K, double Kt, double Eps, double Rad, int NParticles);
-int cholesky(int NParticles, double** D, double** C);
-int Index(int ii,int jj, int NParticles);
-void Randomize(long* idum);
-void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions, RandGen rng);
-void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles);
-bool doesDirExist(char* Path);
-void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString);
-void GetSingleAxisSavedSteps(Point* ParticlePositions, int NumOfParticles, char axis, char* OutString);
-void SetToZero(double* Array, int ArrayLen);
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,

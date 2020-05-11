@@ -1,6 +1,7 @@
-#include "SimConfig.h"
-#include "declarations.h"
 #include <iostream>
+#include "SimConfig.h"
+#include "../declarations.h"
+#include "../Utility.h"
 
 void SimConfig::ToString(char* CfgString)
 {

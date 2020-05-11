@@ -1,7 +1,8 @@
 #include "declarations.h"
-#include "SimConfig.h"
-#include "MDSim.h"
-#include "RandGen.h"
+#include "Classes/SimConfig.h"
+#include "Classes/MDSim.h"
+#include "Classes/RandGen.h"
+#include "Utility.h"
 
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,

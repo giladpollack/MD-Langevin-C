@@ -1,5 +1,5 @@
 #include "Matrix.h"
-#include "declarations.h"
+#include "../declarations.h"
 
 Matrix::Matrix(int Size, bool InitToZero)
 {

@@ -1,6 +1,8 @@
-#include "declarations.h"
-#include "RandGen.h"
+
 #include <random>
+#include <time.h>
+#include "../declarations.h"
+#include "RandGen.h"
 
 #define IM1 2147483563
 #define IM2 2147483399

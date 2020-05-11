@@ -1,6 +1,11 @@
-#include "declarations.h"
-#include "RandGen.h"
 #include <iostream>
+#include <time.h>
+#include <omp.h>
+#include <assert.h>
+#include "declarations.h"
+#include "Classes/RandGen.h"
+
+
 
 const int MAX_PARALLEL_SIMS = 10;
 

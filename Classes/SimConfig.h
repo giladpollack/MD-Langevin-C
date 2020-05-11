@@ -1,6 +1,6 @@
 #ifndef SimConfig_h
 #define SimConfig_h
-#include "declarations.h"
+#include "../declarations.h"
 #include "RandGen.h"
 
 

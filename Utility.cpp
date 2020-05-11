@@ -1,5 +1,5 @@
 #include "declarations.h"
-#include "RandGen.h"
+#include "Classes/RandGen.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
