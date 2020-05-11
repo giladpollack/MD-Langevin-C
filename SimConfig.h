@@ -1,6 +1,7 @@
 #ifndef SimConfig_h
 #define SimConfig_h
 #include "declarations.h"
+#include "RandGen.h"
 
 
 class SimConfig
@@ -45,6 +46,9 @@ class SimConfig
     Point* InitTrapPositions;
     double TrapsA;
     double TrapsS;
+
+    // Random Generation
+    RandGen* rng;
 
     // Methods
     void ToString(char* CfgStirng);

@@ -12,6 +12,7 @@ class MDSim
     SimConfig Cfg;
     SimStepData CurrStepData;
     AdditionalData addedData;
+    RandGen* rng;
 
     // Functions
     void ForcesFunc(SimConfig, SimStepData, AdditionalData);
@@ -21,7 +22,7 @@ class MDSim
     void RunSim();
     
     MDSim() = delete;
-    MDSim(SimConfig Cfg);
+    MDSim(SimConfig Cfg, RandGen* rng);
 
     private:
     void RunSim(SimConfig Cfg, AdditionalData AddedData);

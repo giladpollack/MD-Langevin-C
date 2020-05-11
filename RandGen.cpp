@@ -20,14 +20,20 @@
 /****************************************************************************/
 
 // Members
-long RandGen::idum;
+long idum;
+
+// Ctor
+RandGen::RandGen(long* idum)
+{
+  this->Init(idum);
+}
 
 // Functions
 
 void RandGen::Init(long* idum)
 {
-  RandGen::ran_nrc(idum);
-  RandGen::idum = *idum;
+  ran_nrc(idum);
+  this->idum = *idum;
 }
 
 /**
@@ -77,20 +83,16 @@ float RandGen::ran_nrc(long *idum)
   else return temp;                         /* endpoint value             */
 }
 
-/****************************************************************************/
-
 /**
  * Moves the random seed some steps ahead according to the current time
  */
 void RandGen::Randomize()
 {
-  long* idum = &(RandGen::idum);
   double tt = (double)time(0);
   long   rn = (long)tt % 1000;
   int    i;
 
-  for (i = 0; i < rn; i++) ran_nrc(idum);
-  return;
+  for (i = 0; i < rn; i++) ran_nrc(&(this->idum));
 }
 
 /****************************************************************************/
@@ -102,7 +104,7 @@ void RandGen::Randomize()
  */
 double RandGen::Randn()
 {
-  long* idum = &(RandGen::idum);
+  long* idum = &(this->idum);
   double x, y, s=1.0;
 
   while(s >= 1){
@@ -119,7 +121,7 @@ double RandGen::Randn()
 double RandGen::Randu(double LBound, double UBound)
 {
   double Len = abs(UBound - LBound);
-  float x = ran_nrc(&(RandGen::idum));
-  double res = LBound + (Len*ran_nrc(&(RandGen::idum)));
+  float x = ran_nrc(&(this->idum));
+  double res = LBound + (Len*ran_nrc(&(this->idum)));
   return res;
 }

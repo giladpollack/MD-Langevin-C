@@ -18,7 +18,7 @@ bool checkCollision(double x1, double y1, double r1,
  * @R The radius of the particles
  * @Positions The output parameter in which to save the positions
  */
-void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions)
+void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions, RandGen rng)
 {
   double LBoundX = WallPositionsX[0] + R;
   double UBoundX = WallPositionsX[1] - R;
@@ -32,8 +32,8 @@ void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* Wall
       while (Collision)
       {
           Collision = false;
-          Positions[CurrParticle].x = RandGen::Randu(LBoundX, UBoundX);
-          Positions[CurrParticle].y = RandGen::Randu(LBoundY, UBoundY);
+          Positions[CurrParticle].x = rng.Randu(LBoundX, UBoundX);
+          Positions[CurrParticle].y = rng.Randu(LBoundY, UBoundY);
           for (int CollidedParticle = 0; CollidedParticle < CurrParticle; CollidedParticle++)
           {
               bool CurrCollision = checkCollision(Positions[CurrParticle].x, Positions[CurrParticle].y, R,

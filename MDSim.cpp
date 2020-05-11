@@ -10,9 +10,10 @@ const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";
 const char CFG_FILE[] = "Cfg.txt";
 
-MDSim::MDSim(SimConfig Cfg)
+MDSim::MDSim(SimConfig Cfg, RandGen* rng)
 {
     this->Cfg = Cfg;
+    this->rng = rng;
 };
 
 bool MDSim::CheckFeedbackFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
@@ -27,7 +28,7 @@ void MDSim::FeedbackFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData
 
 void MDSim::PrintFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
 {
-    std::cout << Cfg.SaveFoldername << " - " << ((CurrStepData.StepNum * 100) / Cfg.N) << "%" << std::endl;
+    std::cout << Cfg.SaveFoldername << " - " << (((CurrStepData.StepNum + 1) * 100) / Cfg.N) << "%" << std::endl;
     if (Cfg.DisplayLive)
     {
         char PositionsString[500];
@@ -195,7 +196,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         }
 
         // Checking whether to save to file
-        if ((i % Cfg.SavePeriod == 0) || (i == Cfg.N))
+        if ((i % Cfg.SavePeriod == 0) || (i == Cfg.N - 1))
         {
             PrintFunc(Cfg, CurrStepData, AddedData);
             char StepString[500];
@@ -247,11 +248,11 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         // Running the step
         for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
         {
-            double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn();
+            double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn();
             double Second = (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
-            CurrStepData.ParticlePositions[CurrParticle].x += Ax[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn() +
+            CurrStepData.ParticlePositions[CurrParticle].x += Ax[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn() +
                                                               (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
-            CurrStepData.ParticlePositions[CurrParticle].y += Ay[CurrParticle]*sqrt(Cfg.Dt)*RandGen::Randn() +
+            CurrStepData.ParticlePositions[CurrParticle].y += Ay[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn() +
                                                               (Dy[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fy[CurrParticle]*Cfg.Dt;
         }
         
@@ -265,15 +266,12 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
 
     
     // Freeing the allocated variables
-    DMat.~Matrix();
-    AMat.~Matrix();
     for (int i = 0; i < NumOfSavedSteps; i++)
     {
         free(ParticlePositions[i]);
     }
     free(ParticlePositions);
     free(CurrStepData.ParticlePositions);
-    free(ParticlePositions);
     free(Dx);
     free(Dy);
     free(Ax);

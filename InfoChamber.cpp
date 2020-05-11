@@ -1,11 +1,12 @@
 #include "declarations.h"
 #include "SimConfig.h"
 #include "MDSim.h"
+#include "RandGen.h"
 
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
-                 int NumOfParticles, char* SaveFoldername, bool DisplayLive)
+                 int NumOfParticles, char* SaveFoldername, bool DisplayLive, RandGen rng)
 {
   double WallPositionsX[2];
   double WallPositionsY[2];
@@ -35,11 +36,11 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.WallPositionsY = WallPositionsY;
   Point* InitPositions = (Point*) malloc (Cfg.NumOfParticles*sizeof(Point));
   if(InitPositions==NULL) exit(10);
-  RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions);
+  RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions, rng);
   Cfg.InitPositions = InitPositions;
 
   // Initializing the simulation with the configuration
-  MDSim currSim(Cfg);
+  MDSim currSim(Cfg, &rng);
   currSim.RunSim();
 
   free(InitPositions);

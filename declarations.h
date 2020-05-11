@@ -16,6 +16,7 @@
 #include <string.h>
 #include <time.h>
 #include <omp.h>
+#include "RandGen.h"
 
 
 // ********************** constants  **********************
@@ -57,7 +58,7 @@ void VorForce(double *F, Point *PosC, Polar_Point *PosP, double aa, double K, do
 int cholesky(int NParticles, double** D, double** C);
 int Index(int ii,int jj, int NParticles);
 void Randomize(long* idum);
-void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions);
+void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions, RandGen rng);
 void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles);
 bool doesDirExist(char* Path);
 void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString);
@@ -66,7 +67,7 @@ void SetToZero(double* Array, int ArrayLen);
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
-                 int NumOfParticles, char* SaveFoldername, bool DisplayLive);
+                 int NumOfParticles, char* SaveFoldername, bool DisplayLive, RandGen rng);
 void RotnePrager(   Point* ParticlePositions,
                     int NumOfParticles,
                     double R,

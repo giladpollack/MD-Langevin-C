@@ -1,12 +1,18 @@
+#ifndef RandGen_h
+#define RandGen_h
 class RandGen
 {
     public:
-    static void Init(long* idum);
-    static void Randomize();
-    static double Randn();
-    static double Randu(double LBound, double UBound);
+    
+    void Init(long* idum);
+    void Randomize();
+    double Randn();
+    double Randu(double LBound, double UBound);
 
-    // private:
-    static long idum;
-    static float ran_nrc(long* idum);
+    long idum;
+    float ran_nrc(long* idum);
+
+    RandGen() = delete;
+    RandGen(long* idum);
 };
+#endif
