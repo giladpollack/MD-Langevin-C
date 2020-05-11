@@ -1,10 +1,16 @@
+#ifndef SimStepData_h
+#define SimStepData_h
 #include "../declarations.h"
+#include "Vector.h"
 class SimStepData
 {
     public:
     // General
     int StepNum;
     Point* ParticlePositions;
+    Vector<Point> ParticlePosVec;
+    Vector<double> FxVec;
+    Vector<double> FyVec;
     double* Fx;
     double* Fy;
 
@@ -14,6 +20,12 @@ class SimStepData
     double TrapsS;
 
     // Wall Related
-    double* WallPositionsX;
-    double* WallPositionsY;
+    double WallPositionsX[2];
+    double WallPositionsY[2];
+
+    // Ctor
+    SimStepData() = delete;
+    SimStepData(int NumOfParticles, bool UseWalls = false, bool UseTraps = false, int NumOfTraps = 0);
 };
+
+#endif

@@ -3,6 +3,7 @@
 #include "Classes/MDSim.h"
 #include "Classes/RandGen.h"
 #include "Utility.h"
+#include "Classes/Vector.h"
 
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
@@ -35,14 +36,11 @@ void InfoChamber(int N, double Dt, double SampleRate,
   WallPositionsY[1] = Ly / 2;
   Cfg.WallPositionsX = WallPositionsX;
   Cfg.WallPositionsY = WallPositionsY;
-  Point* InitPositions = (Point*) malloc (Cfg.NumOfParticles*sizeof(Point));
-  if(InitPositions==NULL) exit(10);
-  RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions, rng);
-  Cfg.InitPositions = InitPositions;
+  Vector<Point> InitPositions(Cfg.NumOfParticles);
+  RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions.ptr, rng);
+  Cfg.InitPositions = InitPositions.ptr;
 
   // Initializing the simulation with the configuration
   MDSim currSim(Cfg, &rng);
   currSim.RunSim();
-
-  free(InitPositions);
 }

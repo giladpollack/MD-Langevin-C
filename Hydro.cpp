@@ -114,31 +114,18 @@ void RotnePrager(   Point* ParticlePositions,
     double C1 = 0.75*R;
     double C2 = 0.5*pow(R,3);
 
-    // Allocating the D matrix and setting it to be a unit matrix (multiplied by D)
-    // double** DMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
+    // Setting the D matrix to be a unit matrix (multiplied by D) and initializing the A matrix
     for (int CurrRow = 0; CurrRow < d*NumOfParticles; CurrRow++)
     {
-        // DMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
         for (int CurrCol = 0; CurrCol < d*NumOfParticles; CurrCol++)
         {
             DMat[CurrRow][CurrCol] = 0;
+            AMat[CurrRow][CurrCol] = 0;
+
         }
         
         DMat[CurrRow][CurrRow] = D;
-    }
-
-    // Allocating and initializing the A Matrix
-    // double** AMat = (double**) malloc(d*NumOfParticles*sizeof(double*));
-    for (int CurrRow = 0; CurrRow < d*NumOfParticles; CurrRow++)
-    {
-        // AMat[CurrRow] = (double*) malloc(d*NumOfParticles*sizeof(double));
-        for (int CurrCol = 0; CurrCol < d*NumOfParticles; CurrCol++)
-        {
-            AMat[CurrRow][CurrCol] = 0;
-        }
-        
-    }
-    
+    }  
 
     // Computing the lower triangle of the symmetrical D matrix
     for (int CheckedParticle = 0; CheckedParticle < NumOfParticles; CheckedParticle++)

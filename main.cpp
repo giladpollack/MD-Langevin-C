@@ -40,40 +40,4 @@ int main(int argc, char *argv[])
   // Non-Parallel run
   // char SaveFoldername[20] = "Check";
   // InfoChamber(1e5, 1e-4, 20, 1e-6, 300, 0.001, 11e-6, 11e-6, 0, 7, SaveFoldername, false, rng);
-
-
-
-  //for(ii=0 ; ii < 100000 ; ii++) printf("%.16f\n",ran_nrc(&idum));
-  //for(ii=0 ; ii < 100000 ; ii++) printf("%.16f\n",Randn(idum));
-
-  /*#pragma omp parallel
-  {
-#pragma omp for
-    for(ii=0 ; ii < 10000 ; ii++) printf("%.16f\n",Randn(idum));
-    //for(ii=0 ; ii < 100000 ; ii++) printf("%d\n",rand());
-  }
-  exit(0);*/
-  // InitSim(NParticles, Dist, Err, idum);
-
-  /*****************************************/
-  /* Read Coordinates and input parameters */
-  /*****************************************/
-
-
-  /**********************/
-  /* Memory allocations */
-  /**********************/
-
-  // D = (double*) malloc (4*NParticles*NParticles*sizeof(double));
-  // if(D==NULL) exit(0);
-  // C = (double*) malloc (4*NParticles*NParticles*sizeof(double));
-  // if(C==NULL) exit(1);
-  // R = (double*) malloc (2*NParticles*sizeof(double));
-  // if(R==NULL) exit(2);
-  // F = (double*) malloc (2*NParticles*sizeof(double));
-  // if(F==NULL) exit(3);
-  // P = (double*) malloc (2*NParticles*sizeof(double));
-  // if(P==NULL) exit(4);
-  // PosP = (Point*) malloc (NParticles*sizeof(Point));
-  // if(PosP==NULL) exit(5);
 }

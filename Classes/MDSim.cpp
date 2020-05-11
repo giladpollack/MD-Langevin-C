@@ -1,9 +1,10 @@
 #include <iostream>
 #include <direct.h>
+#include "MDSim.h"
 #include "RandGen.h"
 #include "Matrix.h"
+#include "Vector.h"
 #include "../declarations.h"
-#include "MDSim.h"
 #include "../ForceFunctions.h"
 #include "../Utility.h"
 
@@ -17,17 +18,17 @@ MDSim::MDSim(SimConfig Cfg, RandGen* rng)
     this->rng = rng;
 };
 
-bool MDSim::CheckFeedbackFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
+bool MDSim::CheckFeedbackFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
     return false;
 }
 
-void MDSim::FeedbackFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
+void MDSim::FeedbackFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
     return;
 }
 
-void MDSim::PrintFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
+void MDSim::PrintFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
     std::cout << Cfg.SaveFoldername << " - " << (((CurrStepData.StepNum + 1) * 100) / Cfg.N) << "%" << std::endl;
     if (Cfg.DisplayLive)
@@ -39,7 +40,7 @@ void MDSim::PrintFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData Ad
     
 }
 
-void MDSim::ForcesFunc(SimConfig Cfg, SimStepData CurrStepData, AdditionalData AddedData)
+void MDSim::ForcesFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
     // Initializing the forces at 0
     SetToZero(CurrStepData.Fx, Cfg.NumOfParticles);
@@ -90,22 +91,23 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     char CfgFile[50];
 
     // Allocating the diffusion coefficient vectors
-    double* Dx = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
-    double* Dy = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
-    double* Ax = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
-    double* Ay = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
+    Vector<double> DxVec(Cfg.NumOfParticles);
+    Vector<double> DyVec(Cfg.NumOfParticles);
+    Vector<double> AxVec(Cfg.NumOfParticles);
+    Vector<double> AyVec(Cfg.NumOfParticles);
+    double* Dx = DxVec.ptr;
+    double* Dy = DyVec.ptr;
+    double* Ax = AxVec.ptr;
+    double* Ay = AyVec.ptr;
 
     // Allocating the memory buffer of particle positions to use between saves
     int NumOfSavedSteps = Cfg.SavePeriod / SamplePeriod + 2;
-    Point** ParticlePositions = (Point**) malloc(NumOfSavedSteps*sizeof(Point*));
-    for (int i = 0; i < NumOfSavedSteps; i++)
-    {
-        ParticlePositions[i] = (Point*) malloc(Cfg.NumOfParticles*sizeof(Point));
-    }
+    Matrix<Point> ParticlePosMat(NumOfSavedSteps, Cfg.NumOfParticles);
+    Point** ParticlePositions = ParticlePosMat.Mat;
 
     // Allocating matrices to compute the hydrodynamic interactions if needed
-    Matrix DMat(Cfg.NumOfParticles*2, false);
-    Matrix AMat(Cfg.NumOfParticles*2, false);
+    Matrix<double> DMat(Cfg.NumOfParticles*d, Cfg.NumOfParticles*d);
+    Matrix<double> AMat(Cfg.NumOfParticles*d, Cfg.NumOfParticles*d);
     
     // Creating the path strings for the save files
     strcpy(PosFileX, Cfg.SaveFoldername);
@@ -156,28 +158,19 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         }
     }
 
-
-
     // Setting up the run variables
-    SimStepData CurrStepData;
-    CurrStepData.ParticlePositions = (Point*) malloc (Cfg.NumOfParticles*sizeof(Point));
+    SimStepData CurrStepData(Cfg.NumOfParticles);
     CopyPositions(CurrStepData.ParticlePositions, Cfg.InitPositions, Cfg.NumOfParticles);
     CopyPositions(ParticlePositions[0], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
-    CurrStepData.Fx = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
-    CurrStepData.Fy = (double*) malloc(Cfg.NumOfParticles*sizeof(double));
 
     // Checking whether to initialize wall-related variables
     if (Cfg.UseWalls)
     {
         // Copying the wall positions from SimConfig to SimStepData
-        double CurrWallPositionsX[2];
-        double CurrWallPositionsY[2];
-        CurrWallPositionsX[0] = Cfg.WallPositionsX[0];
-        CurrWallPositionsX[1] = Cfg.WallPositionsX[1];
-        CurrWallPositionsY[0] = Cfg.WallPositionsY[0];
-        CurrWallPositionsY[1] = Cfg.WallPositionsY[1];
-        CurrStepData.WallPositionsX = CurrWallPositionsX;
-        CurrStepData.WallPositionsY = CurrWallPositionsY;
+        CurrStepData.WallPositionsX[0] = Cfg.WallPositionsX[0];
+        CurrStepData.WallPositionsX[1] = Cfg.WallPositionsX[1];
+        CurrStepData.WallPositionsY[0] = Cfg.WallPositionsY[0];
+        CurrStepData.WallPositionsY[1] = Cfg.WallPositionsY[1];
     }
 
     // Printing the initial placements
@@ -263,20 +256,4 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
             FeedbackFunc(Cfg,CurrStepData,AddedData);
         }
     }
-
-
-    
-    // Freeing the allocated variables
-    for (int i = 0; i < NumOfSavedSteps; i++)
-    {
-        free(ParticlePositions[i]);
-    }
-    free(ParticlePositions);
-    free(CurrStepData.ParticlePositions);
-    free(Dx);
-    free(Dy);
-    free(Ax);
-    free(Ay);
-    free(CurrStepData.Fx);
-    free(CurrStepData.Fy);
 }

@@ -10,15 +10,14 @@ class MDSim
     public:
     // Members
     SimConfig Cfg;
-    SimStepData CurrStepData;
     AdditionalData addedData;
     RandGen* rng;
 
     // Functions
-    void ForcesFunc(SimConfig, SimStepData, AdditionalData);
-    void PrintFunc(SimConfig, SimStepData, AdditionalData);
-    bool CheckFeedbackFunc(SimConfig, SimStepData, AdditionalData);
-    void FeedbackFunc(SimConfig, SimStepData, AdditionalData);    
+    void ForcesFunc(SimConfig&, SimStepData&, AdditionalData&);
+    void PrintFunc(SimConfig&, SimStepData&, AdditionalData&);
+    bool CheckFeedbackFunc(SimConfig&, SimStepData&, AdditionalData&);
+    void FeedbackFunc(SimConfig&, SimStepData&, AdditionalData&);    
     void RunSim();
     
     MDSim() = delete;
