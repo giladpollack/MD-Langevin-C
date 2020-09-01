@@ -81,3 +81,39 @@ void GetWCAWallForces(  Point* ParticlePositions,
     }
     
 }
+
+void GetHarmonicWallForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double R,
+                            double K,
+                            double* WallPositionsX,
+                            double* WallPositionsY,
+                            double* Fx,
+                            double* Fy)
+{
+    for (int CurrParticle = 0; CurrParticle < NumOfParticles; CurrParticle++)
+    {
+        Point CheckedParticlePosition = ParticlePositions[CurrParticle];
+        double XBeyondLeftWall = WallPositionsX[0] - (CheckedParticlePosition.x - R);
+        double XBeyondRightWall = CheckedParticlePosition.x + R - WallPositionsX[1];
+        double YBeyondTopWall = CheckedParticlePosition.y + R - WallPositionsY[1];
+        double YBeyondBottomWall = WallPositionsY[0] - (CheckedParticlePosition.y - R);
+
+        if (XBeyondRightWall > 0)
+        {
+            Fx[CurrParticle] -= K * XBeyondRightWall;
+        }
+        if (XBeyondLeftWall > 0)
+        {
+            Fx[CurrParticle] += K * XBeyondLeftWall;
+        }
+        if (YBeyondTopWall > 0)
+        {
+            Fy[CurrParticle] -= K * YBeyondTopWall;
+        }
+        if (YBeyondBottomWall > 0)
+        {
+            Fy[CurrParticle] += K * YBeyondBottomWall;
+        }
+    }
+}

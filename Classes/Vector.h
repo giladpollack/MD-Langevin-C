@@ -10,7 +10,7 @@ using namespace std;
 template <typename T> 
 class Vector { 
 private: 
-    int size; 
+    int Size; 
   
 public:
     T* ptr;
@@ -24,6 +24,7 @@ public:
 template <typename T> 
 Vector<T>::Vector(int Len) 
 {
+    this->Size = Len;
     ptr = new T[Len];
     if (ptr == NULL)
     {

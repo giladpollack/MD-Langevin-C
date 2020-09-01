@@ -8,3 +8,11 @@ void GetWCAWallForces(  Point* ParticlePositions,
                         double* WallPositionsY,
                         double* Fx,
                         double* Fy);
+void GetHarmonicWallForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double R,
+                            double K,
+                            double* WallPositionsX,
+                            double* WallPositionsY,
+                            double* Fx,
+                            double* Fy);                        

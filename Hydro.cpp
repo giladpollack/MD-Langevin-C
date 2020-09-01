@@ -106,7 +106,8 @@ void RotnePrager(   Point* ParticlePositions,
                     double* Dx,
                     double* Dy,
                     double* Ax,
-                    double* Ay)
+                    double* Ay,
+                    double* Psi)
 {
     // The code works for only 2 dimensions, thus:
     int d = 2;
@@ -186,23 +187,14 @@ void RotnePrager(   Point* ParticlePositions,
             if (CurrRow % 2 == 0)
             {
                 Dx[VectorInd] += DMat[CurrRow][CurrCol];
-                Ax[VectorInd] += AMat[CurrRow][CurrCol];
+                Ax[VectorInd] += AMat[CurrRow][CurrCol] * Psi[CurrCol];
             }
             else
             {
                 Dy[VectorInd] += DMat[CurrRow][CurrCol];
-                Ay[VectorInd] += AMat[CurrRow][CurrCol];
+                Ay[VectorInd] += AMat[CurrRow][CurrCol] * Psi[CurrCol];
             }
         }
         
     }
-    
-    // Freeing the allocated memory
-    // for (int i = 0; i < d*NumOfParticles; i++)
-    // {
-    //     free(DMat[i]);
-    //     free(AMat[i]);
-    // }
-    // free(AMat);
-    // free(DMat);
 }

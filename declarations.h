@@ -62,5 +62,6 @@ void RotnePrager(   Point* ParticlePositions,
                     double* Dx,
                     double* Dy,
                     double* Ax,
-                    double* Ay);                 
+                    double* Ay,
+                    double* Psi);                 
 #endif

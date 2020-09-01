@@ -62,6 +62,16 @@
         "tuple": "cpp",
         "unordered_map": "cpp",
         "xfunctional": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "array": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "iomanip": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "sstream": "cpp",
+        "xtree": "cpp"
     }
 }

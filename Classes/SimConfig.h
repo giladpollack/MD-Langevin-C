@@ -11,7 +11,7 @@ class SimConfig
 
     // Data members:
     // Basic settings
-    int N;
+    long N;
     int NumOfParticles;
     double R;
     double Eta;
@@ -49,6 +49,7 @@ class SimConfig
 
     // Random Generation
     RandGen* rng;
+    long ReseedPeriod;
 
     // Methods
     void ToString(char* CfgStirng);

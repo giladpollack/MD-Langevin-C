@@ -23,12 +23,14 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.SaveFoldername = SaveFoldername;
   Cfg.SavePeriod = Cfg.N / 10;
   Cfg.UseWalls = true;
-  char WallRepulsionType[20] = "WCA";
+  char WallRepulsionType[20] = "Harmonic";
   Cfg.WallRepulsionType = WallRepulsionType;
-  Cfg.UseHydro = true;
+  Cfg.WallHarmonicK =  2e6*kB*Cfg.T /1e-6;
+  Cfg.UseHydro = false;
   Cfg.UseParticleRepulsion = true;
   Cfg.UseTraps = false;
   Cfg.WCAEpsilon = 0.2*kB*Cfg.T;
+  Cfg.ReseedPeriod = 1e5;
   
   WallPositionsX[0] = -Lx / 2;
   WallPositionsX[1] = Lx /2 - WallShrink;

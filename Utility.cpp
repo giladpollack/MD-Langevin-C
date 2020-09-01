@@ -155,9 +155,13 @@ bool doesDirExist(char* Path)
     struct stat info;
     bool res = false;
     if( stat( Path, &info ) != 0 )
-        printf( "cannot access %s\n", Path );
-    else if( info.st_mode & S_IFDIR )  // S_ISDIR() doesn't exist on my windows 
+    {
+        //printf( "cannot access %s\n", Path );
+    }
+    else if( info.st_mode & S_IFDIR )
+    {
         res = true;
+    }
     
     return res;
 }

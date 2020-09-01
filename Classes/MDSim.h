@@ -10,7 +10,7 @@ class MDSim
     public:
     // Members
     SimConfig Cfg;
-    AdditionalData addedData;
+    AdditionalData AddedData;
     RandGen* rng;
 
     // Functions

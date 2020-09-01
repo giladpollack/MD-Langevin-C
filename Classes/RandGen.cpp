@@ -25,17 +25,16 @@
 long idum;
 
 // Ctor
-RandGen::RandGen(long* idum)
+RandGen::RandGen(long idum)
 {
-  this->Init(idum);
+  this->generator.seed(idum);
 }
 
 // Functions
 
-void RandGen::Init(long* idum)
+void RandGen::Reseed(long Seed)
 {
-  ran_nrc(idum);
-  this->idum = *idum;
+  this->generator.seed(Seed);
 }
 
 /**
@@ -109,10 +108,12 @@ double RandGen::Randn()
   long* idum = &(this->idum);
   double x, y, s=1.0;
 
-  while(s >= 1){
-    // srand((unsigned)time(NULL));
-    x = 2.0*(ran_nrc(idum)) - 1;
-    y = 2.0*(ran_nrc(idum)) - 1;
+  std::uniform_real_distribution<double> distribution(-1,1);
+  while(s >= 1)
+  {
+    // x = 2.0*(ran_nrc(idum)) - 1;
+    // y = 2.0*(ran_nrc(idum)) - 1;
+    x = distribution(this->generator);
     s = ((x*x) + (y*y));
   }
   double fac = sqrt(-2.0*log(s)/s);
@@ -122,8 +123,9 @@ double RandGen::Randn()
 
 double RandGen::Randu(double LBound, double UBound)
 {
-  double Len = abs(UBound - LBound);
-  float x = ran_nrc(&(this->idum));
-  double res = LBound + (Len*ran_nrc(&(this->idum)));
-  return res;
+  // double Len = abs(UBound - LBound);
+  // float x = ran_nrc(&(this->idum));
+  // double res = LBound + (Len*ran_nrc(&(this->idum)));
+  std::uniform_real_distribution<double> distribution(LBound, UBound);
+  return distribution(this->generator);
 }
