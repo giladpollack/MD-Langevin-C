@@ -14,7 +14,7 @@ class MDSim
     RandGen* rng;
 
     // Functions
-    void ForcesFunc(SimConfig&, SimStepData&, AdditionalData&);
+    void ForcesFunc(SimConfig&, SimStepData&, AdditionalData&, int SampleInd);
     void PrintFunc(SimConfig&, SimStepData&, AdditionalData&);
     bool CheckFeedbackFunc(SimConfig&, SimStepData&, AdditionalData&);
     void FeedbackFunc(SimConfig&, SimStepData&, AdditionalData&);    

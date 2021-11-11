@@ -17,7 +17,9 @@ void SimConfig::ToString(char* CfgString)
             "NumOfParticles = %d\n"
             "UseParticleRepulsion = %d\n"
             "UseHydro = %d\n"
-            "UseWalls = %d\n",
+            "UseWalls = %d\n"
+            "WallGaussianA = %d"
+            "WallGaussianS = %d",
             this->N,
             this->Dt,
             this->R,
@@ -28,7 +30,9 @@ void SimConfig::ToString(char* CfgString)
             this->NumOfParticles,
             this->UseParticleRepulsion,
             this->UseHydro,
-            this->UseWalls);
+            this->UseWalls,
+            this->WallGaussianA,
+            this->WallGaussianS);
     strcat(CfgString, "SaveFoldername = ");        
     strcat(CfgString, this->SaveFoldername);
     strcat(CfgString, "\n");

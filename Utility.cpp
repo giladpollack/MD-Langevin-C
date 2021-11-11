@@ -25,28 +25,36 @@ void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* Wall
   double LBoundY = WallPositionsY[0] + R;
   double UBoundY = WallPositionsY[1] - R;
   bool Collision;
+  int MaxIterations = 1000;
+  int CurrIteration = 0;
   for (int CurrParticle = 0; CurrParticle < NumOfParticles; CurrParticle++)
   {
-      Collision = true;
-      // Running until there is no collision
-      while (Collision)
-      {
-          Collision = false;
-          Positions[CurrParticle].x = rng.Randu(LBoundX, UBoundX);
-          Positions[CurrParticle].y = rng.Randu(LBoundY, UBoundY);
-          for (int CollidedParticle = 0; CollidedParticle < CurrParticle; CollidedParticle++)
-          {
-              bool CurrCollision = checkCollision(Positions[CurrParticle].x, Positions[CurrParticle].y, R,
-                                                  Positions[CollidedParticle].x, Positions[CollidedParticle].y, R);
-              if (CurrCollision)
-              {
-                  Collision = true;
-                  break;
-              }
-          }
-          
-      }
+
       
+    CurrIteration = 0;
+    Collision = true;
+    // Running until there is no collision
+    while (Collision && CurrIteration < MaxIterations)
+    {
+        Collision = false;
+        Positions[CurrParticle].x = rng.Randu(LBoundX, UBoundX);
+        Positions[CurrParticle].y = rng.Randu(LBoundY, UBoundY);
+        for (int CollidedParticle = 0; CollidedParticle < CurrParticle; CollidedParticle++)
+        {
+            bool CurrCollision = checkCollision(Positions[CurrParticle].x, Positions[CurrParticle].y, R,
+                                                Positions[CollidedParticle].x, Positions[CollidedParticle].y, R);
+            if (CurrCollision)
+            {
+                Collision = true;
+                break;
+            }
+        }
+        CurrIteration++;
+    }
+    if (CurrIteration >= MaxIterations - 1)
+    {
+        CurrParticle = -1;
+    }
   }
 }
 

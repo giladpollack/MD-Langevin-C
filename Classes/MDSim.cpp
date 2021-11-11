@@ -35,7 +35,7 @@ void MDSim::FeedbackFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalDa
 
 void MDSim::PrintFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
-    //std::cout << Cfg.SaveFoldername << " - " << ((CurrStepData.StepNum + 1) / (Cfg.N / 100)) << "%" << std::endl;
+    // std::cout << Cfg.SaveFoldername << " - " << ((CurrStepData.StepNum + 1) / (Cfg.N / 100)) << "%" << std::endl;
     if (Cfg.DisplayLive)
     {
         char PositionsString[500];
@@ -45,7 +45,7 @@ void MDSim::PrintFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData&
     
 }
 
-void MDSim::ForcesFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
+void MDSim::ForcesFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData, int SampleInd)
 {
     // Initializing the forces at 0
     SetToZero(CurrStepData.Fx, Cfg.NumOfParticles);
@@ -86,6 +86,18 @@ void MDSim::ForcesFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData
                                     CurrStepData.Fx,
                                     CurrStepData.Fy);
         }
+        else if (strcmp(Cfg.WallRepulsionType, "Gaussian") == 0)
+        {
+            GetGaussianWallForces(  CurrStepData.ParticlePositions,
+                                    Cfg.NumOfParticles,
+                                    Cfg.WallGaussianA,
+                                    pow(Cfg.WallGaussianS,2),
+                                    CurrStepData.WallPositionsX,
+                                    CurrStepData.WallPositionsY,
+                                    CurrStepData.Fx,
+                                    CurrStepData.Fy,
+                                    AddedData, SampleInd);
+        }        
         else
         {
             throw;
@@ -105,10 +117,10 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     double D = kB*Cfg.T/Gamma;
     int d = 2;
     int SamplePeriod = 1 / (Cfg.Dt * Cfg.SampleRate);
-    char PosFileX[50];
-    char PosFileY[50];
-    char AddedDataFile[50];
-    char CfgFile[50];
+    char PosFileX[100];
+    char PosFileY[100];
+    char AddedDataFile[100];
+    char CfgFile[100];
 
     // Allocating the diffusion coefficient vectors
     Vector<double> DxVec(Cfg.NumOfParticles);
@@ -130,6 +142,16 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     // Allocating memory for the distance from wall added variable, if necessary
     Vector<double> ClosestPosVec(NumOfSavedSteps);
     AddedData.ClosestParticlePositions = ClosestPosVec.ptr;
+
+    // Allocating memory for the force measurement variables, if necessary
+    Vector<double> FRightVec(NumOfSavedSteps);
+    Vector<double> FLeftVec(NumOfSavedSteps);
+    Vector<double> FUpVec(NumOfSavedSteps);
+    Vector<double> FDownVec(NumOfSavedSteps);
+    AddedData.ForcesRight = FRightVec.ptr;
+    AddedData.ForcesLeft = FLeftVec.ptr;
+    AddedData.ForcesUp = FUpVec.ptr;
+    AddedData.ForcesDown = FDownVec.ptr;
 
     // Allocating matrices to compute the hydrodynamic interactions if needed
     Matrix<double> DMat(Cfg.NumOfParticles*d, Cfg.NumOfParticles*d);
@@ -239,7 +261,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         
 
         // Forces Computation
-        ForcesFunc(Cfg, CurrStepData, AddedData);
+        ForcesFunc(Cfg, CurrStepData, AddedData, SampleInd);
 
         // Computing the vector of random gaussian variables for the brownian motion
         for (int CurrVar = 0; CurrVar < d*Cfg.NumOfParticles; CurrVar++)
@@ -326,7 +348,11 @@ void SaveDataToFiles(char* PosFileX, char* PosFileY, char* AddedDataFile, Point*
             FILE* DataFilestream = fopen(AddedDataFile,"a");
             for (int SavedStepInd = 0; SavedStepInd < SampleInd - 1; SavedStepInd++)
             {
-                fprintf(DataFilestream, "%e\n", AddedData.ClosestParticlePositions[SavedStepInd]); 
+                // fprintf(DataFilestream, "%e\n", AddedData.ClosestParticlePositions[SavedStepInd]);
+                fprintf(DataFilestream, "%e,%e,%e,%e\n",
+                        AddedData.ForcesRight[SavedStepInd], AddedData.ForcesLeft[SavedStepInd],
+                        AddedData.ForcesUp[SavedStepInd], AddedData.ForcesDown[SavedStepInd]);
+
             }
             fclose(DataFilestream);
 }
@@ -334,4 +360,27 @@ void SaveDataToFiles(char* PosFileX, char* PosFileY, char* AddedDataFile, Point*
 void SampleAddedData(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData, int SampleInd)
 {
     AddedData.ClosestParticlePositions[SampleInd] = CurrStepData.WallPositionsX[1] - CurrStepData.ParticlePositions[0].x - Cfg.R;
+    // for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
+    // {
+    //     double CurrFx = CurrStepData.Fx[CurrParticle];
+    //     double CurrFy = CurrStepData.Fy[CurrParticle];
+    //     if (CurrFx > 0)
+    //     {
+    //         AddedData.ForcesRight[SampleInd] += abs(CurrFx);
+    //     }
+    //     else
+    //     {
+    //         AddedData.ForcesLeft[SampleInd] += abs(CurrFx);
+    //     }
+        
+    //     if (CurrFy > 0)
+    //     {
+    //         AddedData.ForcesUp[SampleInd] += abs(CurrFy);
+    //     }
+    //     else
+    //     {
+    //         AddedData.ForcesDown[SampleInd] += abs(CurrFy);
+    //     }
+    // }
+    
 }

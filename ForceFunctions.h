@@ -15,4 +15,14 @@ void GetHarmonicWallForces( Point* ParticlePositions,
                             double* WallPositionsX,
                             double* WallPositionsY,
                             double* Fx,
-                            double* Fy);                        
+                            double* Fy);
+                            
+void GetGaussianWallForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double A,
+                            double sigmaSq,
+                            double* WallPositionsX,
+                            double* WallPositionsY,
+                            double* Fx,
+                            double* Fy,
+                            AdditionalData& AddedData, int SampleInd);

@@ -1,4 +1,5 @@
 #include "declarations.h"
+#include "Classes/AdditionalData.h"
 
 double GetLJForce(double R, double Eps, double Sigma)
 {
@@ -115,5 +116,42 @@ void GetHarmonicWallForces( Point* ParticlePositions,
         {
             Fy[CurrParticle] += K * YBeyondBottomWall;
         }
+    }
+}
+
+void GetGaussianWallForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double A,
+                            double sigmaSq,
+                            double* WallPositionsX,
+                            double* WallPositionsY,
+                            double* Fx,
+                            double* Fy,
+                            AdditionalData& AddedData, int SampleInd)
+{
+    for (int CurrParticle = 0; CurrParticle < NumOfParticles; CurrParticle++)
+    {
+        Point CheckedParticlePosition = ParticlePositions[CurrParticle];
+        double LeftDist =  CheckedParticlePosition.x - WallPositionsX[0];
+        double RightDist = WallPositionsX[1] - CheckedParticlePosition.x;
+        double TopDist = WallPositionsY[1] - CheckedParticlePosition.y;
+        double BottomDist = CheckedParticlePosition.y - WallPositionsY[0];
+
+        double ForceRight = -(A/sigmaSq)*(LeftDist*exp(-pow(LeftDist,2)/(2*sigmaSq)));
+        double ForceLeft = -(A/sigmaSq)*(RightDist*exp(-pow(RightDist,2)/(2*sigmaSq)));
+        double ForceUp = -(A/sigmaSq)*(BottomDist*exp(-pow(BottomDist,2)/(2*sigmaSq)));
+        double ForceDown = -(A/sigmaSq)*(TopDist*exp(-pow(TopDist,2)/(2*sigmaSq)));
+        ForceRight = abs(ForceRight);
+        ForceLeft = -abs(ForceLeft);
+        ForceDown = -abs(ForceDown);
+        ForceUp = abs(ForceUp);
+
+        Fx[CurrParticle] += ForceLeft + ForceRight;
+        Fy[CurrParticle] += ForceUp + ForceDown;
+
+        AddedData.ForcesRight[SampleInd] += abs(ForceRight);
+        AddedData.ForcesLeft[SampleInd] += abs(ForceLeft);
+        AddedData.ForcesDown[SampleInd] += abs(ForceDown);
+        AddedData.ForcesUp[SampleInd] += abs(ForceUp);
     }
 }
