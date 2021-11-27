@@ -23,7 +23,7 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.T = T;
   Cfg.SaveFoldername = SaveFoldername;
   Cfg.SavePeriod = Cfg.N / 10;
-  Cfg.UseWalls = false;
+  Cfg.UseWalls = true;
   char WallRepulsionType[20] = "Gaussian";
   Cfg.WallRepulsionType = WallRepulsionType;
   Cfg.WallHarmonicK =  2e6*kB*Cfg.T /1e-6;
