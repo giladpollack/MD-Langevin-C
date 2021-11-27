@@ -8,7 +8,8 @@
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
-                 int NumOfParticles, char* SaveFoldername, bool DisplayLive, RandGen rng)
+                 int NumOfParticles, char* SaveFoldername,
+                 bool DisplayLive, bool UseParticleInteractions, RandGen rng)
 {
   double WallPositionsX[2];
   double WallPositionsY[2];
@@ -22,14 +23,14 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.T = T;
   Cfg.SaveFoldername = SaveFoldername;
   Cfg.SavePeriod = Cfg.N / 10;
-  Cfg.UseWalls = true;
+  Cfg.UseWalls = false;
   char WallRepulsionType[20] = "Gaussian";
   Cfg.WallRepulsionType = WallRepulsionType;
   Cfg.WallHarmonicK =  2e6*kB*Cfg.T /1e-6;
   Cfg.WallGaussianA = 50*kB*Cfg.T;
   Cfg.WallGaussianS = 2.5e-7;
   Cfg.UseHydro = false;
-  Cfg.UseParticleRepulsion = true;
+  Cfg.UseParticleRepulsion = UseParticleInteractions;
   Cfg.UseTraps = false;
   Cfg.WCAEpsilon = 0.2*kB*Cfg.T;
   Cfg.ReseedPeriod = 1e5;

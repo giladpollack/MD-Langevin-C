@@ -114,6 +114,7 @@ double RandGen::Randn()
     // x = 2.0*(ran_nrc(idum)) - 1;
     // y = 2.0*(ran_nrc(idum)) - 1;
     x = distribution(this->generator);
+    y = distribution(this->generator);
     s = ((x*x) + (y*y));
   }
   double fac = sqrt(-2.0*log(s)/s);

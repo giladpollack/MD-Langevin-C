@@ -242,6 +242,10 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         {
             CopyPositions(ParticlePositions[SampleInd], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
             SampleAddedData(Cfg, CurrStepData, AddedData, SampleInd);
+            AddedData.ForcesLeft[SampleInd] /= SamplePeriod;
+            AddedData.ForcesRight[SampleInd] /= SamplePeriod;
+            AddedData.ForcesUp[SampleInd] /= SamplePeriod;
+            AddedData.ForcesDown[SampleInd] /= SamplePeriod;
             SampleInd++;
         }
 
@@ -304,8 +308,8 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         // Running the step
         for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
         {
-            double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn();
-            double Second = (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
+            // double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn();
+            // double Second = (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
             CurrStepData.ParticlePositions[CurrParticle].x += Ax[CurrParticle]*sqrt(Cfg.Dt) +
                                                               (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
             CurrStepData.ParticlePositions[CurrParticle].y += Ay[CurrParticle]*sqrt(Cfg.Dt) +
@@ -348,18 +352,26 @@ void SaveDataToFiles(char* PosFileX, char* PosFileY, char* AddedDataFile, Point*
             FILE* DataFilestream = fopen(AddedDataFile,"a");
             for (int SavedStepInd = 0; SavedStepInd < SampleInd - 1; SavedStepInd++)
             {
-                // fprintf(DataFilestream, "%e\n", AddedData.ClosestParticlePositions[SavedStepInd]);
-                fprintf(DataFilestream, "%e,%e,%e,%e\n",
+                fprintf(DataFilestream, "%e,%e,%e,%e,%e\n",
                         AddedData.ForcesRight[SavedStepInd], AddedData.ForcesLeft[SavedStepInd],
-                        AddedData.ForcesUp[SavedStepInd], AddedData.ForcesDown[SavedStepInd]);
-
+                        AddedData.ForcesUp[SavedStepInd], AddedData.ForcesDown[SavedStepInd],
+                        AddedData.ClosestParticlePositions[SavedStepInd]);
             }
             fclose(DataFilestream);
 }
 
 void SampleAddedData(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData, int SampleInd)
 {
-    AddedData.ClosestParticlePositions[SampleInd] = CurrStepData.WallPositionsX[1] - CurrStepData.ParticlePositions[0].x - Cfg.R;
+    double MaxPosition = -1;
+    for (int CurrParticleInd = 0; CurrParticleInd < Cfg.NumOfParticles; CurrParticleInd++)
+    {
+        if (CurrStepData.ParticlePositions[CurrParticleInd].x > MaxPosition)
+        {
+            MaxPosition = CurrStepData.ParticlePositions[CurrParticleInd].x;
+        }
+    }
+    
+    AddedData.ClosestParticlePositions[SampleInd] = CurrStepData.WallPositionsX[1] - MaxPosition;
     // for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
     // {
     //     double CurrFx = CurrStepData.Fx[CurrParticle];

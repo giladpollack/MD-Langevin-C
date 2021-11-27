@@ -187,12 +187,12 @@ void RotnePrager(   Point* ParticlePositions,
             if (CurrRow % 2 == 0)
             {
                 Dx[VectorInd] += DMat[CurrRow][CurrCol];
-                Ax[VectorInd] += AMat[CurrRow][CurrCol] * Psi[CurrCol];
+                Ax[VectorInd] += sqrt(2) * AMat[CurrRow][CurrCol] * Psi[CurrCol];
             }
             else
             {
                 Dy[VectorInd] += DMat[CurrRow][CurrCol];
-                Ay[VectorInd] += AMat[CurrRow][CurrCol] * Psi[CurrCol];
+                Ay[VectorInd] += sqrt(2) * AMat[CurrRow][CurrCol] * Psi[CurrCol];
             }
         }
         

@@ -52,7 +52,8 @@ typedef struct
 void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
-                 int NumOfParticles, char* SaveFoldername, bool DisplayLive, RandGen rng);
+                 int NumOfParticles, char* SaveFoldername,
+                 bool DisplayLive, bool UseParticleInteractions, RandGen rng);
 void RotnePrager(   Point* ParticlePositions,
                     int NumOfParticles,
                     double R,

@@ -21,44 +21,66 @@ the positions */
 int main(int argc, char *argv[])
 {  
   RandGen rng(time(NULL));
-
-  for (int CurrParticleNum = 1; CurrParticleNum < 8; CurrParticleNum++)
+  
+  for (int ShrinkInd = 5; ShrinkInd < 6; ShrinkInd++)
   {
-
-    const int NumOfSims = 100;
-    long StepsInSim = 1e7;
-
-    double Dt = 1e-4;
-    double ParticleDiameter = 3e-6;
-    int NumOfParticles = CurrParticleNum;
-
-    double ChamberLen = 16e-6;
-    double WallShrinkPerc = 50;
-    double WallShrink = (WallShrinkPerc / 100) * ChamberLen;
-
-    double WaterViscosity = 0.001;
-    double SolutionViscosity = 2*WaterViscosity;
-
-
-    char Foldernames[NumOfSims][50];
-    char BaseFoldername[200];
-    sprintf(BaseFoldername, "%d particles Gaussian shrunk %d bigger colloids", NumOfParticles, (int)WallShrinkPerc);
-    // char BaseFoldername[] = "5 Particles With Interactions Shrunk 6 micron";
-    int NumOfSimsRun = 0;
-    
-    // Creating the base folder to save the simulations in
-    mkdir(BaseFoldername);
-
-    // Running the parallel simulations
-    omp_set_num_threads(8);
-    #pragma omp parallel for
-    for (int i = 0; i < NumOfSims; i++)
+    for (int CurrParticleNum = 1; CurrParticleNum < 2; CurrParticleNum++)
     {
-      sprintf(Foldernames[i],"%s/%d",BaseFoldername, i + 1);
-      RandGen currGen(rng.Randu(-1e7, 1e7));
-      InfoChamber(StepsInSim, Dt, 20, ParticleDiameter / 2, 300, SolutionViscosity, ChamberLen, ChamberLen, WallShrink, NumOfParticles, Foldernames[i], false, currGen);
-      NumOfSimsRun++;
-      std::cout << "Run " << NumOfSimsRun << " out of " << NumOfSims << std::endl;
+
+      const int NumOfSims = 1;
+      long StepsInSim = 1e6;
+
+      double Dt = 1e-4; // sec
+      int SampleRate = 1e4; // 1/sec
+      int T = 300;
+      double ParticleDiameter = 2e-6; // meter
+      int NumOfParticles = CurrParticleNum;
+      bool UseParticleInteractions;
+
+      for (int InteractionsInd = 0; InteractionsInd < 1; InteractionsInd++)
+      { 
+        UseParticleInteractions = (InteractionsInd == 1);
+        
+        
+
+        double ChamberLen = 16e-6; // meter
+        double WallShrinkPerc = 10 * ShrinkInd;
+        double WallShrink = (WallShrinkPerc / 100) * ChamberLen;
+
+        double WaterViscosity = 0.001; // Pascal-second
+        double SolutionViscosity = 2*WaterViscosity;
+
+
+        char Foldernames[NumOfSims][50];
+        char BaseFoldername[200];
+        if (!UseParticleInteractions)
+        {
+          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d no interactions", NumOfParticles, (int)WallShrinkPerc);
+        }
+        else
+        {
+          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d no hydro", NumOfParticles, (int)WallShrinkPerc);
+        }
+        
+        
+        // char BaseFoldername[] = "5 Particles With Interactions Shrunk 6 micron";
+        int NumOfSimsRun = 0;
+        
+        // Creating the base folder to save the simulations in
+        mkdir(BaseFoldername);
+
+        // Running the parallel simulations
+        omp_set_num_threads(8);
+        #pragma omp parallel for
+        for (int i = 0; i < NumOfSims; i++)
+        {
+          sprintf(Foldernames[i],"%s/%d",BaseFoldername, i + 1);
+          RandGen currGen(rng.Randu(-1e7, 1e7));
+          InfoChamber(StepsInSim, Dt, SampleRate, ParticleDiameter / 2, T, SolutionViscosity, ChamberLen, ChamberLen, WallShrink, NumOfParticles, Foldernames[i], false, UseParticleInteractions, currGen);
+          NumOfSimsRun++;
+          std::cout << "Run " << NumOfSimsRun << " out of " << NumOfSims << std::endl;
+        }
+      }
     }
   }
   // Non-Parallel run
