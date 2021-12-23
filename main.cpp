@@ -21,23 +21,23 @@ the positions */
 int main(int argc, char *argv[])
 {  
   RandGen rng(time(NULL));
-  
-  for (int ShrinkInd = 5; ShrinkInd < 6; ShrinkInd++)
+
+  for (int ShrinkInd = 0; ShrinkInd < 8; ShrinkInd++)
   {
-    for (int CurrParticleNum = 1; CurrParticleNum < 2; CurrParticleNum++)
+    for (int CurrParticleNum = 8; CurrParticleNum < 9; CurrParticleNum++)
     {
 
-      const int NumOfSims = 1;
-      long StepsInSim = 1e6;
+      const int NumOfSims = 300;
+      long StepsInSim = 1e7;
 
       double Dt = 1e-4; // sec
-      int SampleRate = 1e4; // 1/sec
+      int SampleRate = 20; // 1/sec
       int T = 300;
       double ParticleDiameter = 2e-6; // meter
       int NumOfParticles = CurrParticleNum;
       bool UseParticleInteractions;
 
-      for (int InteractionsInd = 0; InteractionsInd < 1; InteractionsInd++)
+      for (int InteractionsInd = 1; InteractionsInd < 2; InteractionsInd++)
       { 
         UseParticleInteractions = (InteractionsInd == 1);
         
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d no hydro", NumOfParticles, (int)WallShrinkPerc);
+          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d with hydro", NumOfParticles, (int)WallShrinkPerc);
         }
         
         

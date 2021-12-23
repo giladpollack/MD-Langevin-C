@@ -29,7 +29,7 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.WallHarmonicK =  2e6*kB*Cfg.T /1e-6;
   Cfg.WallGaussianA = 50*kB*Cfg.T;
   Cfg.WallGaussianS = 2.5e-7;
-  Cfg.UseHydro = false;
+  Cfg.UseHydro = true;
   Cfg.UseParticleRepulsion = UseParticleInteractions;
   Cfg.UseTraps = false;
   Cfg.WCAEpsilon = 0.2*kB*Cfg.T;
