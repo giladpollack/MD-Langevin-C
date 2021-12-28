@@ -53,7 +53,8 @@ void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
                  int NumOfParticles, char* SaveFoldername,
-                 bool DisplayLive, bool UseParticleInteractions, RandGen rng);
+                 bool DisplayLive, bool UseParticleInteractions,
+                 double ActiveV, RandGen rng);
 void RotnePrager(   Point* ParticlePositions,
                     int NumOfParticles,
                     double R,

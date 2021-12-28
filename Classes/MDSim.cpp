@@ -10,11 +10,13 @@
 
 const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";
+const char ORIENT_FILE[] = "orientations.csv";
 const char CFG_FILE[] = "Cfg.txt";
 const char ADDED_DATA_FILE[] = "AddedData.csv";
 
 // Declarations
 void SaveDataToFiles(char* PosFileX, char* PosFileY, char* AddedDataFile, Point** ParticlePositions, int SampleInd, SimConfig& Cfg, AdditionalData& addedData);
+void SaveDataToFiles(char* PosFileX, char* PosFileY, char* OrientationsFile, char* AddedDataFile,  Point** ParticlePositions, double** ParticleOrientations, int SampleInd, SimConfig& Cfg, AdditionalData& AddedData);
 void SampleAddedData(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData, int SampleInd);
 
 MDSim::MDSim(SimConfig Cfg, RandGen* rng)
@@ -115,10 +117,12 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     // Basic definitions
     double Gamma = 6*PI*Cfg.R*Cfg.Eta;
     double D = kB*Cfg.T/Gamma;
+    double DRotate = kB*Cfg.T/(8*PI*Cfg.Eta*pow(Cfg.R,3));
     int d = 2;
     int SamplePeriod = 1 / (Cfg.Dt * Cfg.SampleRate);
     char PosFileX[100];
     char PosFileY[100];
+    char OrientFile[100];
     char AddedDataFile[100];
     char CfgFile[100];
 
@@ -138,6 +142,10 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     int NumOfSavedSteps = Cfg.SavePeriod / SamplePeriod + 2;
     Matrix<Point> ParticlePosMat(NumOfSavedSteps, Cfg.NumOfParticles);
     Point** ParticlePositions = ParticlePosMat.Mat;
+
+    // Allocating memory for saving the particle orientations to use between saves
+    Matrix<double> ParticleOrientMat(NumOfSavedSteps, Cfg.NumOfParticles);
+    double** ParticleOrientations = ParticleOrientMat.Mat;
 
     // Allocating memory for the distance from wall added variable, if necessary
     Vector<double> ClosestPosVec(NumOfSavedSteps);
@@ -160,12 +168,14 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     // Creating the path strings for the save files
     strcpy(PosFileX, Cfg.SaveFoldername);
     strcpy(PosFileY, Cfg.SaveFoldername);
+    strcpy(OrientFile, Cfg.SaveFoldername);
     strcpy(CfgFile, Cfg.SaveFoldername);
     strcpy(AddedDataFile, Cfg.SaveFoldername);
 
 
     strcat(strcat(PosFileX, "/"), COORD_FILE_X);
     strcat(strcat(PosFileY, "/"), COORD_FILE_Y);
+    strcat(strcat(OrientFile, "/"), ORIENT_FILE);
     strcat(strcat(CfgFile, "/"), CFG_FILE);
     strcat(strcat(AddedDataFile, "/"), ADDED_DATA_FILE);
 
@@ -216,6 +226,8 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     SimStepData CurrStepData(Cfg.NumOfParticles);
     CopyPositions(CurrStepData.ParticlePositions, Cfg.InitPositions, Cfg.NumOfParticles);
     CopyPositions(ParticlePositions[0], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
+    CopyDoubleArr(CurrStepData.ParticleOrientations, Cfg.InitOrientations, Cfg.NumOfParticles);
+    CopyDoubleArr(ParticleOrientations[0], CurrStepData.ParticleOrientations, Cfg.NumOfParticles);
     SampleAddedData(Cfg,CurrStepData,AddedData,0);
 
     // Checking whether to initialize wall-related variables
@@ -241,6 +253,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         if (i % SamplePeriod == 0)
         {
             CopyPositions(ParticlePositions[SampleInd], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
+            CopyDoubleArr(ParticleOrientations[SampleInd], CurrStepData.ParticleOrientations, Cfg.NumOfParticles);
             SampleAddedData(Cfg, CurrStepData, AddedData, SampleInd);
             AddedData.ForcesLeft[SampleInd] /= SamplePeriod;
             AddedData.ForcesRight[SampleInd] /= SamplePeriod;
@@ -253,7 +266,16 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         if ((i % Cfg.SavePeriod == 0) || (i == Cfg.N - 1))
         {
             PrintFunc(Cfg, CurrStepData, AddedData);
-            SaveDataToFiles(PosFileX, PosFileY, AddedDataFile, ParticlePositions, SampleInd, Cfg, AddedData);
+            if (!Cfg.IsActive)
+            {
+                SaveDataToFiles(PosFileX, PosFileY, AddedDataFile, ParticlePositions, SampleInd, Cfg, AddedData);
+            }
+            else
+            {
+                SaveDataToFiles(PosFileX, PosFileY, OrientFile, AddedDataFile, ParticlePositions, ParticleOrientations, SampleInd, Cfg, AddedData);
+            }
+            
+            
             SampleInd = 0;
         }
 
@@ -308,12 +330,19 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         // Running the step
         for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
         {
-            // double First = Ax[CurrParticle]*sqrt(Cfg.Dt)*(*this->rng).Randn();
-            // double Second = (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
             CurrStepData.ParticlePositions[CurrParticle].x += Ax[CurrParticle]*sqrt(Cfg.Dt) +
-                                                              (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
+                                                            (Dx[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fx[CurrParticle]*Cfg.Dt;
             CurrStepData.ParticlePositions[CurrParticle].y += Ay[CurrParticle]*sqrt(Cfg.Dt) +
-                                                              (Dy[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fy[CurrParticle]*Cfg.Dt;
+                                                            (Dy[CurrParticle]/(kB*Cfg.T))*CurrStepData.Fy[CurrParticle]*Cfg.Dt;            
+            if (Cfg.IsActive)
+            {
+                // Adding the active motion component
+                CurrStepData.ParticlePositions[CurrParticle].x += Cfg.ActiveV * cos(CurrStepData.ParticleOrientations[CurrParticle]) * Cfg.Dt;
+                CurrStepData.ParticlePositions[CurrParticle].y += Cfg.ActiveV * sin(CurrStepData.ParticleOrientations[CurrParticle]) * Cfg.Dt;
+
+                CurrStepData.ParticleOrientations[CurrParticle] += Cfg.ActiveChirality * Cfg.Dt + sqrt(2*DRotate*Cfg.Dt)*(*this->rng).Randn();
+            }
+
         }
         
         // Checking whether to perform feedback
@@ -322,6 +351,23 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
             FeedbackFunc(Cfg,CurrStepData,AddedData);
         }
     }
+}
+
+void SaveDataToFiles(char* PosFileX, char* PosFileY, char* OrientationsFile, char* AddedDataFile,  Point** ParticlePositions, double** ParticleOrientations, int SampleInd, SimConfig& Cfg, AdditionalData& AddedData)
+{
+            char StepString[500];
+
+            // Saving the X positions
+            FILE* OrientationsFileStream = fopen(OrientationsFile,"a");
+            for (int SavedStepInd = 0; SavedStepInd < SampleInd - 1; SavedStepInd++)
+            {
+                GetRotationSavedSteps(ParticleOrientations[SavedStepInd], Cfg.NumOfParticles, StepString);
+                fprintf(OrientationsFileStream, StepString); 
+            }
+
+            fclose(OrientationsFileStream);
+
+            SaveDataToFiles(PosFileX, PosFileY, AddedDataFile, ParticlePositions, SampleInd, Cfg, AddedData);
 }
 
 void SaveDataToFiles(char* PosFileX, char* PosFileY, char* AddedDataFile, Point** ParticlePositions, int SampleInd, SimConfig& Cfg, AdditionalData& AddedData)

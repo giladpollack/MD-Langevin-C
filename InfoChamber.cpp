@@ -9,7 +9,8 @@ void InfoChamber(int N, double Dt, double SampleRate,
                  double R,double T, double Eta,
                  double Lx, double Ly,double WallShrink,
                  int NumOfParticles, char* SaveFoldername,
-                 bool DisplayLive, bool UseParticleInteractions, RandGen rng)
+                 bool DisplayLive, bool UseParticleInteractions,
+                 double ActiveV, RandGen rng)
 {
   double WallPositionsX[2];
   double WallPositionsY[2];
@@ -34,6 +35,9 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Cfg.UseTraps = false;
   Cfg.WCAEpsilon = 0.2*kB*Cfg.T;
   Cfg.ReseedPeriod = 1e5;
+  Cfg.IsActive = true;
+  Cfg.ActiveV = ActiveV; // meter/sec
+  Cfg.ActiveChirality = 0; // Rad/sec
   
   WallPositionsX[0] = -Lx / 2;
   WallPositionsX[1] = Lx /2 - WallShrink;
@@ -44,6 +48,14 @@ void InfoChamber(int N, double Dt, double SampleRate,
   Vector<Point> InitPositions(Cfg.NumOfParticles);
   RandomizePositions(Cfg.NumOfParticles, WallPositionsX, WallPositionsY, R, InitPositions.ptr, rng);
   Cfg.InitPositions = InitPositions.ptr;
+
+  // Randomizing the initial orientations
+  Vector<double> InitOrientations(Cfg.NumOfParticles);
+  for (int CurrParticleNum = 0; CurrParticleNum < Cfg.NumOfParticles; CurrParticleNum++)
+  {
+    InitOrientations.ptr[CurrParticleNum] = rng.Randu(0, 2*PI);
+  }
+  Cfg.InitOrientations = InitOrientations.ptr;
 
   // Initializing the simulation with the configuration
   MDSim currSim(Cfg, &rng);

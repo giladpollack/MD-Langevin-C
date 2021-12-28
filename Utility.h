@@ -5,8 +5,10 @@
 // Functions
 void RandomizePositions(int NumOfParticles, double* WallPositionsX, double* WallPositionsY, double R, Point* Positions, RandGen rng);
 void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles);
+void CopyDoubleArr(double* TargetArray, double* SourceArray, int NumOfParticles);
 void GetPositionsString(Point* Positions, int NumOfParticles, char* OutString);
 void GetSingleAxisSavedSteps(Point* ParticlePositions, int NumOfParticles, char axis, char* OutString);
+void GetRotationSavedSteps(double* ParticleOrientations, int NumOfParticles, char* OutString);
 bool doesDirExist(char* Path);
 void SetToZero(double* Array, int ArrayLen);
 

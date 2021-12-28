@@ -19,6 +19,7 @@ class SimConfig
     double Dt;
     double SampleRate;
     Point* InitPositions;
+    double* InitOrientations;
 
     // Display Settings
     bool DisplayLive;
@@ -32,6 +33,9 @@ class SimConfig
     // Settings for forces
     bool UseHydro;
     bool UseWalls;
+    bool IsActive;
+    double ActiveV;
+    double ActiveChirality;
     char* WallRepulsionType;
     double WallHarmonicK;
     double WallGaussianA;
@@ -84,6 +88,7 @@ class SimConfig
         this->InitTrapPositions = nullptr;
         this->TrapsA = 0;
         this->TrapsS = 0;
+        this->InitOrientations = nullptr;
     }
     // SimConfig() = delete;
     // SimConfig(int NumOfParticles, double** R, double** InitPositions, double Eta,

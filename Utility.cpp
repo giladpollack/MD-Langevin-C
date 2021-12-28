@@ -76,6 +76,22 @@ void CopyPositions(Point* TargetArray, Point* SourceArray, int NumOfParticles)
 }
 
 /**
+ * Copies values of doubles from the source array to the target array.
+ * The target array MUST BE ALLOCATED BEFORE CALLING THIS FUNCTiON!
+ *
+ * @TargetArray The array of doubles into which values will be copied. MUST BE ALLOCATED!
+ * @SourceArray The array from which the values are taken.
+ * @NumOfParticles The number of particles to copy from the source to the target
+ */
+void CopyDoubleArr(double* TargetArray, double* SourceArray, int NumOfParticles)
+{
+    for (int i = 0; i < NumOfParticles; i++)
+    {
+        TargetArray[i] = SourceArray[i];
+    }
+}
+
+/**
  * Creates a string of the particle positions. OutString MUST BE ALLOCATED BEFORE CALLING THE FUNCTION!
  *
  * @Positions The positions of the particles
@@ -121,6 +137,33 @@ void GetSingleAxisSavedSteps(Point* ParticlePositions, int NumOfParticles, char 
         {
             throw;
         }
+        
+        strcat(OutString,TempString);
+    }
+
+    OutString[strlen(OutString) - 1] = '\n';
+    
+}
+
+/**
+ * Creates a string of the particle orientations.
+ * OutString MUST BE ALLOCATED BEFORE CALLING THE FUNCTION!
+ *
+ * @ParticlePositions The positions of the particles
+ * @NumOfParticles The number of particles to get positions for
+ * @axis Which axis to get
+ * @MultFactor A factor to allow the user to save in desired units (micrometers for instance)
+ * @Outstring The output parameter returning the string of positions
+ */
+void GetRotationSavedSteps(double* ParticleOrientations, int NumOfParticles, char* OutString)
+{
+    OutString[0] = '\0';
+
+    for (int i = 0; i < NumOfParticles; i++)
+    {
+        char TempString[20];
+        sprintf(TempString, "%e,",ParticleOrientations[i]);
+
         
         strcat(OutString,TempString);
     }

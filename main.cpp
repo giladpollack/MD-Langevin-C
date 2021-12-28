@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 {  
   RandGen rng(time(NULL));
 
-  for (int ShrinkInd = 0; ShrinkInd < 8; ShrinkInd++)
+  for (int ShrinkInd = 0; ShrinkInd < 6; ShrinkInd++)
   {
     for (int CurrParticleNum = 8; CurrParticleNum < 9; CurrParticleNum++)
     {
@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
       double ParticleDiameter = 2e-6; // meter
       int NumOfParticles = CurrParticleNum;
       bool UseParticleInteractions;
+      double ActiveV = 1e-6; // meter/sec
 
       for (int InteractionsInd = 1; InteractionsInd < 2; InteractionsInd++)
       { 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
         double ChamberLen = 16e-6; // meter
         double WallShrinkPerc = 10 * ShrinkInd;
         double WallShrink = (WallShrinkPerc / 100) * ChamberLen;
-
+  
         double WaterViscosity = 0.001; // Pascal-second
         double SolutionViscosity = 2*WaterViscosity;
 
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d with hydro", NumOfParticles, (int)WallShrinkPerc);
+          sprintf(BaseFoldername, "%d particles Gaussian shrunk %d active v=%f", NumOfParticles, (int)WallShrinkPerc, ActiveV*1e6);
         }
         
         
@@ -76,7 +77,10 @@ int main(int argc, char *argv[])
         {
           sprintf(Foldernames[i],"%s/%d",BaseFoldername, i + 1);
           RandGen currGen(rng.Randu(-1e7, 1e7));
-          InfoChamber(StepsInSim, Dt, SampleRate, ParticleDiameter / 2, T, SolutionViscosity, ChamberLen, ChamberLen, WallShrink, NumOfParticles, Foldernames[i], false, UseParticleInteractions, currGen);
+          InfoChamber(StepsInSim, Dt, SampleRate, ParticleDiameter / 2, T, SolutionViscosity,
+                      ChamberLen, ChamberLen, WallShrink, NumOfParticles, Foldernames[i],
+                      false, UseParticleInteractions, ActiveV,
+                      currGen);
           NumOfSimsRun++;
           std::cout << "Run " << NumOfSimsRun << " out of " << NumOfSims << std::endl;
         }

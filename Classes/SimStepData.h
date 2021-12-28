@@ -9,6 +9,8 @@ class SimStepData
     int StepNum;
     Point* ParticlePositions;
     Vector<Point> ParticlePosVec;
+    double* ParticleOrientations;
+    Vector<double> ParticleOrientVec;
     Vector<double> FxVec;
     Vector<double> FyVec;
     double* Fx;
