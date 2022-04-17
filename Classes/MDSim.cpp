@@ -11,6 +11,7 @@
 const char COORD_FILE_X[] = "pos_x.csv";
 const char COORD_FILE_Y[] = "pos_y.csv";
 const char ORIENT_FILE[] = "orientations.csv";
+const char FLUCT_DIR_FILE[] = "FluctDirections.csv";
 const char CFG_FILE[] = "Cfg.txt";
 const char ADDED_DATA_FILE[] = "AddedData.csv";
 
@@ -27,12 +28,34 @@ MDSim::MDSim(SimConfig Cfg, RandGen* rng)
 
 bool MDSim::CheckFeedbackFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
+    if (!Cfg.IsAthermal)
+    {
+        return false;
+    }
+    else
+    {
+        // TODO: Optimize by computing this once outside of the function
+        int SwitchPeriod = 1 / (Cfg.Dt * Cfg.FluctSwitchFreq);
+        if (CurrStepData.StepNum % SwitchPeriod == 0)
+        {
+            return true;
+        }
+        
+    }
+    
     return false;
 }
 
 void MDSim::FeedbackFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
 {
-    return;
+    if (Cfg.IsAthermal)
+    {
+        for (int CurrParticle = 0; CurrParticle < Cfg.NumOfParticles; CurrParticle++)
+        {
+            CurrStepData.FluctDirections[CurrParticle] = (*this->rng).Randu(0, 2*PI);
+        }
+    }
+    
 }
 
 void MDSim::PrintFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData& AddedData)
@@ -105,7 +128,17 @@ void MDSim::ForcesFunc(SimConfig& Cfg, SimStepData& CurrStepData, AdditionalData
             throw;
         }
     }
-    
+
+    if (Cfg.IsAthermal)
+    {
+        GetAthermalFluctForces(CurrStepData.ParticlePositions,
+                                    Cfg.NumOfParticles,
+                                    Cfg.FluctForce,
+                                    CurrStepData.FluctDirections,
+                                    CurrStepData.Fx,
+                                    CurrStepData.Fy,
+                                    AddedData, SampleInd);
+    }
 }
 
 void MDSim::RunSim()
@@ -123,6 +156,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     char PosFileX[100];
     char PosFileY[100];
     char OrientFile[100];
+    char FluctDirFile[100];
     char AddedDataFile[100];
     char CfgFile[100];
 
@@ -147,6 +181,10 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     Matrix<double> ParticleOrientMat(NumOfSavedSteps, Cfg.NumOfParticles);
     double** ParticleOrientations = ParticleOrientMat.Mat;
 
+    // Allocating memory for saving the particle Fluctuation directions to use between saves
+    Matrix<double> FluctDirectionsMat(NumOfSavedSteps, Cfg.NumOfParticles);
+    double** FluctDirections = ParticleOrientMat.Mat;    
+
     // Allocating memory for the distance from wall added variable, if necessary
     Vector<double> ClosestPosVec(NumOfSavedSteps);
     AddedData.ClosestParticlePositions = ClosestPosVec.ptr;
@@ -169,6 +207,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     strcpy(PosFileX, Cfg.SaveFoldername);
     strcpy(PosFileY, Cfg.SaveFoldername);
     strcpy(OrientFile, Cfg.SaveFoldername);
+    strcpy(FluctDirFile, Cfg.SaveFoldername);
     strcpy(CfgFile, Cfg.SaveFoldername);
     strcpy(AddedDataFile, Cfg.SaveFoldername);
 
@@ -176,6 +215,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     strcat(strcat(PosFileX, "/"), COORD_FILE_X);
     strcat(strcat(PosFileY, "/"), COORD_FILE_Y);
     strcat(strcat(OrientFile, "/"), ORIENT_FILE);
+    strcat(strcat(FluctDirFile, "/"), FLUCT_DIR_FILE);
     strcat(strcat(CfgFile, "/"), CFG_FILE);
     strcat(strcat(AddedDataFile, "/"), ADDED_DATA_FILE);
 
@@ -204,7 +244,6 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     // Saving the configuration to a file
     char CfgString[10000];
     Cfg.ToString(CfgString);
-    //std::cout << CfgString << std::endl;
     FILE* CfgFilestream = fopen(CfgFile,"w");
     fprintf(CfgFilestream, CfgString);
     fclose(CfgFilestream);
@@ -226,9 +265,20 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
     SimStepData CurrStepData(Cfg.NumOfParticles);
     CopyPositions(CurrStepData.ParticlePositions, Cfg.InitPositions, Cfg.NumOfParticles);
     CopyPositions(ParticlePositions[0], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
-    CopyDoubleArr(CurrStepData.ParticleOrientations, Cfg.InitOrientations, Cfg.NumOfParticles);
-    CopyDoubleArr(ParticleOrientations[0], CurrStepData.ParticleOrientations, Cfg.NumOfParticles);
+    if (Cfg.IsActive)
+    {
+        CopyDoubleArr(CurrStepData.ParticleOrientations, Cfg.InitOrientations, Cfg.NumOfParticles);
+        CopyDoubleArr(ParticleOrientations[0], CurrStepData.ParticleOrientations, Cfg.NumOfParticles);
+    }
+
     SampleAddedData(Cfg,CurrStepData,AddedData,0);
+
+    if (Cfg.IsAthermal)
+    {
+        // Randomizing the random fluctuation directions
+        FeedbackFunc(Cfg, CurrStepData, AddedData);
+        CopyDoubleArr(FluctDirections[0], CurrStepData.FluctDirections, Cfg.NumOfParticles);
+    }
 
     // Checking whether to initialize wall-related variables
     if (Cfg.UseWalls)
@@ -254,6 +304,7 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         {
             CopyPositions(ParticlePositions[SampleInd], CurrStepData.ParticlePositions, Cfg.NumOfParticles);
             CopyDoubleArr(ParticleOrientations[SampleInd], CurrStepData.ParticleOrientations, Cfg.NumOfParticles);
+            CopyDoubleArr(FluctDirections[SampleInd], CurrStepData.FluctDirections, Cfg.NumOfParticles);
             SampleAddedData(Cfg, CurrStepData, AddedData, SampleInd);
             AddedData.ForcesLeft[SampleInd] /= SamplePeriod;
             AddedData.ForcesRight[SampleInd] /= SamplePeriod;
@@ -266,13 +317,21 @@ void MDSim::RunSim(SimConfig Cfg, AdditionalData AddedData)
         if ((i % Cfg.SavePeriod == 0) || (i == Cfg.N - 1))
         {
             PrintFunc(Cfg, CurrStepData, AddedData);
-            if (!Cfg.IsActive)
+            if (Cfg.IsActive && Cfg.IsAthermal)
             {
-                SaveDataToFiles(PosFileX, PosFileY, AddedDataFile, ParticlePositions, SampleInd, Cfg, AddedData);
+                // FUTURE: Add save for active particles with athermal fluctuations
+            }
+            else if (!Cfg.IsActive && Cfg.IsAthermal)
+            {
+                SaveDataToFiles(PosFileX, PosFileY, FluctDirFile, AddedDataFile, ParticlePositions, FluctDirections, SampleInd, Cfg, AddedData);
+            }
+            else if (Cfg.IsActive && !Cfg.IsAthermal)
+            {
+                SaveDataToFiles(PosFileX, PosFileY, OrientFile, AddedDataFile, ParticlePositions, ParticleOrientations, SampleInd, Cfg, AddedData);
             }
             else
             {
-                SaveDataToFiles(PosFileX, PosFileY, OrientFile, AddedDataFile, ParticlePositions, ParticleOrientations, SampleInd, Cfg, AddedData);
+                SaveDataToFiles(PosFileX, PosFileY, AddedDataFile, ParticlePositions, SampleInd, Cfg, AddedData);
             }
             
             

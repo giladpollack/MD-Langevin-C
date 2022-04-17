@@ -1,5 +1,12 @@
 #include "declarations.h"
 void GetWCAParticleForces(Point* Positions, int NumOfParticles, double R, double Eps, double* Fx, double* Fy);
+void GetAthermalFluctForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double FluctForce,
+                            double* FluctDirections,
+                            double* Fx,
+                            double* Fy,
+                            AdditionalData& AddedData, int SampleInd);
 void GetWCAWallForces(  Point* ParticlePositions,
                         int NumOfParticles,
                         double R,

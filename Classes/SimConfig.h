@@ -51,6 +51,11 @@ class SimConfig
     double TrapsA;
     double TrapsS;
 
+    // Settings for athermal fluctuations
+    bool IsAthermal;
+    double FluctForce;
+    double FluctSwitchFreq;
+
     // Random Generation
     RandGen* rng;
     long ReseedPeriod;

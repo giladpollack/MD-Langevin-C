@@ -20,9 +20,11 @@ void SimConfig::ToString(char* CfgString)
             "UseWalls = %d\n"
             "WallGaussianA = %d\n"
             "WallGaussianS = %d\n"
-            "IsActive = %d"
-            "ActiveV = %f"
-            "ActiveChirality = %f",
+            "IsActive = %d\n"
+            "ActiveV = %f\n"
+            "ActiveChirality = %f\n"
+            "FluctForce = %f\n"
+            "FluctSwitchFreq = %f\n",
             this->N,
             this->Dt,
             this->R,
@@ -38,7 +40,9 @@ void SimConfig::ToString(char* CfgString)
             this->WallGaussianS,
             this->IsActive,
             this->ActiveV,
-            this->ActiveChirality);
+            this->ActiveChirality,
+            this->FluctForce,
+            this->FluctSwitchFreq);
     strcat(CfgString, "SaveFoldername = ");        
     strcat(CfgString, this->SaveFoldername);
     strcat(CfgString, "\n");

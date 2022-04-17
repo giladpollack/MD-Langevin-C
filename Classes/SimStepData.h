@@ -11,6 +11,8 @@ class SimStepData
     Vector<Point> ParticlePosVec;
     double* ParticleOrientations;
     Vector<double> ParticleOrientVec;
+    double* FluctDirections;
+    Vector<double> FluctDirectionsVec;
     Vector<double> FxVec;
     Vector<double> FyVec;
     double* Fx;

@@ -55,6 +55,12 @@ void InfoChamber(int N, double Dt, double SampleRate,
                  int NumOfParticles, char* SaveFoldername,
                  bool DisplayLive, bool UseParticleInteractions,
                  double ActiveV, RandGen rng);
+void InfoChamberAthermal(int N, double Dt, double SampleRate,
+                 double R,double T, double Eta,
+                 double Lx, double Ly,double WallShrink,
+                 int NumOfParticles, char* SaveFoldername,
+                 bool DisplayLive, bool UseParticleInteractions,
+                 double FluctForce, double FluctFreq, RandGen rng);                 
 void RotnePrager(   Point* ParticlePositions,
                     int NumOfParticles,
                     double R,
@@ -65,5 +71,5 @@ void RotnePrager(   Point* ParticlePositions,
                     double* Dy,
                     double* Ax,
                     double* Ay,
-                    double* Psi);                 
+                    double* Psi);             
 #endif

@@ -40,6 +40,21 @@ void GetWCAParticleForces(Point* Positions, int NumOfParticles, double R, double
     }
 }
 
+void GetAthermalFluctForces( Point* ParticlePositions,
+                            int NumOfParticles,
+                            double FluctForce,
+                            double* FluctDirections,
+                            double* Fx,
+                            double* Fy,
+                            AdditionalData& AddedData, int SampleInd)
+{
+    for (int CurrParticle = 0; CurrParticle < NumOfParticles; CurrParticle++)
+    {
+        Fx[CurrParticle] += FluctForce * cos(FluctDirections[CurrParticle]);
+        Fy[CurrParticle] += FluctForce * sin(FluctDirections[CurrParticle]);
+    }
+}
+
 void GetWCAWallForces(  Point* ParticlePositions,
                         int NumOfParticles,
                         double R,
